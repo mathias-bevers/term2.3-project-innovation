@@ -14,6 +14,11 @@ public class UserClient : MonoBehaviour
     private IPAddress ipAd = IPAddress.Parse("127.0.0.1");
     private ServerClient client = new ServerClient(new TcpClient(), -1);
 
+    UserData currentData;
+    public UserData CurrentData { get => currentData; }
+
+    List<UserData> allClients = new List<UserData>();
+
     void HandleReadPackets()
     {
         if (client.Available == 0) return;
@@ -29,8 +34,18 @@ public class UserClient : MonoBehaviour
     void ReceivePacket(ServerClient client, ISerializable serializable)
     {
         if (serializable is Heartbeat) SendPacket(serializable);
-        Debug.Log("Received a undeclared packet: " + serializable.GetType());
+        if (serializable is DeclareUser) 
+        { 
+            DeclareUser du = (DeclareUser)serializable; 
+            currentData = new UserData(du.ID, du.Name, du.Colour); 
+        }
+        if(serializable is UserList)
+        {
+            UserList ul = (UserList)serializable;
+        }
     }
+
+
 
     public void SendPacket(ISerializable serializable)
     {
