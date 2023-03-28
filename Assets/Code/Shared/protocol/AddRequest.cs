@@ -7,12 +7,12 @@
     {
         public Score score;
 
-        public void Serialize(Packet pPacket)
+        public override void Serialize(Packet pPacket)
         {
             pPacket.Write(score);
         }
 
-        public void Deserialize(Packet pPacket)
+        public override void Deserialize(Packet pPacket)
         {
             score = pPacket.Read<Score>();
         }

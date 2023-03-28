@@ -9,7 +9,7 @@ namespace shared
     {
         public List<Score> scores;
 
-        public void Serialize(Packet pPacket)
+        public override void Serialize(Packet pPacket)
         {
             int count = (scores == null ? 0 : scores.Count);
 
@@ -21,7 +21,7 @@ namespace shared
             }
         }
 
-        public void Deserialize(Packet pPacket)
+        public override void Deserialize(Packet pPacket)
         {
             scores = new List<Score>();
 

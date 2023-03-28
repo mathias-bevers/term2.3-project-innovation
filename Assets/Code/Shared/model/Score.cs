@@ -16,13 +16,13 @@
             score = pScore;
         }
 
-        public void Serialize(Packet pPacket)
+        public override void Serialize(Packet pPacket)
         {
             pPacket.Write(name);
             pPacket.Write(score);
         }
 
-        public void Deserialize(Packet pPacket)
+        public override void Deserialize(Packet pPacket)
         {
             name = pPacket.ReadString();
             score = pPacket.ReadInt();

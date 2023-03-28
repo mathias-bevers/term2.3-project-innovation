@@ -8,51 +8,31 @@ using UnityEngine;
 
 public class MainServer : MonoBehaviour
 {
-    IPAddress ipAd = IPAddress.Parse("127.0.0.1");
-    TcpListener listener;
+    private IPAddress ipAd = IPAddress.Parse("127.0.0.1");
+    private ServerListener server;
 
-    List<TcpClient> clients = new List<TcpClient>();
-
-    public MainServer()
+    private void Start()
     {
-        listener = new TcpListener(ipAd, 25565);
+        server.Declare<Score>(HandleScore);
+        StartServer();
     }
 
-    public void StartServer()
+    void HandleClient(TcpClient client, ISerializable serializable)
     {
-        listener.Start();
+        Debug.Log("Other Packet: " + serializable.GetType());
     }
 
-    private void Update()
+    void HandleScore(TcpClient client, ISerializable serializable)
     {
-        try
-        {
-            AcceptNewClients();
-            HandleClients();
-        }
-        catch
-        {
-
-        }
+        Score score = (Score)serializable;
+        Debug.Log("Score: " + score.name + " : " + score.score);
     }
 
-    void AcceptNewClients()
-    {
-        if (!listener.Pending()) return;
-        TcpClient curClient = listener.AcceptTcpClient();
-        clients.Add(curClient);
-    }
+    public void StartServer() => server.Start();
+    public void StopServer() => server.Stop();
 
-    void HandleClients()
-    {
-        foreach(TcpClient client in clients)
-        {
-            if (client.Available == 0) continue;
-            byte[] gottenBytes = StreamUtil.Read(client.GetStream());
-            Packet packet = new Packet(gottenBytes);
-            ISerializable current = packet.Read<ISerializable>();
-
-            if (current is Score) Debug.Log("JA!");
-        }
-    }
+    public MainServer() => server = new ServerListener(ipAd, 25565);
+    private void OnEnable() => server.Register(HandleClient);
+    private void OnDisable() => server.Unregister(HandleClient);
+    private void Update() => server.Update();
 }
