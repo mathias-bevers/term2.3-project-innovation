@@ -11,7 +11,7 @@ public class UserClient : MonoBehaviour
 {
     public ClientReader reader { get; set; }
 
-    private IPAddress ipAd = IPAddress.Parse("127.0.0.1");
+    private IPAddress ipAd = IPAddress.Parse("192.168.2.10");
     private ServerClient client = new ServerClient(new TcpClient(), -1);
 
     UserData currentData;
@@ -59,7 +59,7 @@ public class UserClient : MonoBehaviour
     }
 
     void Awake() => DontDestroyOnLoad(this);
-    void Start() => client.client.Connect(ipAd, 25565);
+    void Start() => client.client.Connect(ipAd, 5555);
     void Update() => HandleReadPackets();
     void OnEnable() => Register(ReceivePacket);
     void OnDisable() => Unregister(ReceivePacket);

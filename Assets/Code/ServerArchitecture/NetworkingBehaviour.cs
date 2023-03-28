@@ -2,6 +2,8 @@ using shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
+using System.Net;
 using System.Reflection;
 using UnityEngine;
 
@@ -65,4 +67,18 @@ public class NetworkingBehaviour : MonoBehaviour
     internal virtual void Enabled() { }
     internal virtual void Disabled() { }
     internal virtual void ReceivePacket(ServerClient client, ISerializable serializable) { Debug.Log("Received a packet: " + serializable.GetType()); }
+
+    public static string GetLocalIPAddress()
+    {
+        var host = Dns.GetHostEntry(Dns.GetHostName());
+        foreach (var ip in host.AddressList)
+        {
+            if (ip.AddressFamily == AddressFamily.InterNetwork)
+            {
+                Debug.Log(ip.ToString());
+                return ip.ToString();
+            }
+        }
+        throw new Exception("No network adapters with an IPv4 address in the system!");
+    }
 }

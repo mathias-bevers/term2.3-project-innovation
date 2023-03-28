@@ -9,7 +9,7 @@ using static PacketHandler;
 
 public class TestClient : MonoBehaviour, PacketHandler
 {
-    private IPAddress ipAd = IPAddress.Parse("127.0.0.1");
+    private IPAddress ipAd = IPAddress.Parse("192.168.2.10");
     ServerClient client = new ServerClient(new TcpClient(), -1);
 
     public Dictionary<Type, Action<ServerClient, ISerializable>> callbacks { get; set; } = new Dictionary<Type, Action<ServerClient, ISerializable>>();
@@ -29,7 +29,7 @@ public class TestClient : MonoBehaviour, PacketHandler
         Declare<UserList>(ReceiveUserList);
         Declare<Disconnected>(ReceiveDisconnected);
 
-        client.client.Connect(ipAd, 25565);
+        client.client.Connect(ipAd, 5555);
     }
 
     void OnEnable() => Register(ReceivePacket);
