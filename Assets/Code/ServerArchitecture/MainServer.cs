@@ -17,12 +17,12 @@ public class MainServer : MonoBehaviour
         StartServer();
     }
 
-    void HandleClient(TcpClient client, ISerializable serializable)
+    void HandleClient(ServerClient client, ISerializable serializable)
     {
         Debug.Log("Other Packet: " + serializable.GetType());
     }
 
-    void HandleScore(TcpClient client, ISerializable serializable)
+    void HandleScore(ServerClient client, ISerializable serializable)
     {
         Score score = (Score)serializable;
         Debug.Log("Score: " + score.name + " : " + score.score);
