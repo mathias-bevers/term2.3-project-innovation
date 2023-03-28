@@ -4,25 +4,28 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using static PacketHandler;
 
 public class ServerListener : TcpListener, PacketHandler
 {
-    public ServerListener(IPAddress localaddr, int port) : base(localaddr, port) { }
 
+    public ServerListener(IPAddress localaddr, int port, int maxPlayerCount) : base(localaddr, port) { this.maxPlayerCount = maxPlayerCount; }
+
+    readonly int maxPlayerCount = 4;
     bool _isRunning = false;
 
     int currentServerCount = 0;
 
+    float counter = 0;
+
     public bool IsRunning { get { return _isRunning; } }
-    
+
     public ClientReader reader { get; set; }
 
     List<ServerClient> _clients = new List<ServerClient>();
 
-   public List<ServerClient> Clients { get { return _clients; } }
+    public List<ServerClient> Clients { get { return _clients; } }
 
     public new void Start()
     {
@@ -41,7 +44,7 @@ public class ServerListener : TcpListener, PacketHandler
 
     public void Declare<T>(Action<ServerClient, ISerializable> callback) where T : ISerializable
     {
-        if(!callbacks.ContainsKey(typeof(T)))
+        if (!callbacks.ContainsKey(typeof(T)))
             callbacks.Add(typeof(T), callback);
     }
 
@@ -60,20 +63,54 @@ public class ServerListener : TcpListener, PacketHandler
         if (!_isRunning) return;
         HandleNewClients();
         HandleClients();
+        RidDeadClients();
+    }
+
+    public void FixedUpdate()
+    {
+        counter += Time.fixedUnscaledDeltaTime;
+        if (counter >= 1)
+        {
+            foreach (ServerClient client in Clients)
+            {
+                if (client.missedHeartbeats >= 3) client.markAsDead = true;
+                else client.missedHeartbeats++;
+            }
+            SendMessages(Clients, new Heartbeat(50));
+            counter = 0;
+        }
+    }
+
+    void RidDeadClients()
+    {
+        for (int i = Clients.Count - 1; i >= 0; i--)
+        {
+            ServerClient cur = Clients[i];
+            if (!cur.markAsDead) continue;
+            Clients.Remove(cur);
+            SendMessages(Clients, new Disconnected(cur.ID));
+        }
     }
 
     void HandleNewClients()
     {
         if (!Pending()) return;
+        if (Clients.Count >= maxPlayerCount) return;
         ServerClient curClient = new ServerClient(AcceptTcpClient(), currentServerCount);
         _clients.Add(curClient);
-        SendMessage(curClient, new DeclareUser(currentServerCount, "User" + currentServerCount.ToString(), new Vector3(1, 1, 1)));
+        SendMessage(curClient, curClient.self);
+        UserList list = new UserList();
+        List<DeclareUser> users = new List<DeclareUser>();
+        foreach (ServerClient client in _clients)
+            users.Add(client.self);
+        list.users = users.ToArray();
+        SendMessages(_clients, list);
         currentServerCount++;
     }
 
     internal void SendMessage(ServerClient client, ISerializable message) => SendMessages(new ServerClient[] { client }, message);
     internal void SendMessages(List<ServerClient> clients, ISerializable message) => SendMessages(clients.ToArray(), message);
-    internal void SendMessages(ServerClient[] clients, ISerializable message) 
+    internal void SendMessages(ServerClient[] clients, ISerializable message)
     {
         Packet sendPacket = Convert(message);
         byte[] packetBytes = sendPacket.GetBytes();
@@ -86,7 +123,7 @@ public class ServerListener : TcpListener, PacketHandler
             catch { }
         }
     }
-    
+
 
     Packet Convert(ISerializable serializable)
     {
@@ -97,7 +134,7 @@ public class ServerListener : TcpListener, PacketHandler
 
     void HandleClients()
     {
-        foreach(ServerClient client in _clients)
+        foreach (ServerClient client in _clients)
         {
             try
             {
@@ -107,12 +144,26 @@ public class ServerListener : TcpListener, PacketHandler
                 Packet packet = new Packet(gottenBytes);
                 ISerializable current = packet.Read<ISerializable>();
 
+                bool earlyCatch = EarlyCatch(client, current);
+
                 Type storedType = current.GetType();
                 if (callbacks.ContainsKey(storedType))
                     callbacks[storedType]?.Invoke(client, current);
-                else reader?.Invoke(client, current);
+                else if (!earlyCatch) reader?.Invoke(client, current);
             }
             catch { }
         }
+    }
+
+    bool EarlyCatch(ServerClient client, ISerializable serializable)
+    {
+        if (serializable is Heartbeat)
+        {
+            Heartbeat hb = serializable as Heartbeat;
+            if (hb.num == 50) client.missedHeartbeats = 0;
+            return true;
+        }
+
+        return false;
     }
 }

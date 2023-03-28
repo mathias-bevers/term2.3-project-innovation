@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using UnityEditor.PackageManager;
 
 public class ServerClient 
 {
@@ -17,10 +16,17 @@ public class ServerClient
     public int Available => _client.Available;
     public NetworkStream stream => _client.GetStream();
 
+    public int missedHeartbeats = 0;
+
+    public bool markAsDead = false;
+
+    public DeclareUser self;
+
     public ServerClient(TcpClient client, int id)
     {
         _client = client;
         _id = id;
+        self = new DeclareUser(id, "Guest" + id.ToString(), UnityEngine.Vector3.one);
     }
 
     public static implicit operator TcpClient(ServerClient client) => client.client;
