@@ -102,5 +102,6 @@ public class TestClient : MonoBehaviour, PacketHandler
     {
         GUI.matrix = Matrix4x4.Scale((Screen.width / 1080) * Vector3.one);
         GUI.Label(new Rect(transform.position.x * 720, transform.position.y * 720, 100, 100), client.ID.ToString() + " : " +  myName);
+
     }
 }
