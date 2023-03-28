@@ -17,10 +17,19 @@ public class TestClient : MonoBehaviour, PacketHandler
 
     string myName = string.Empty;
 
+    [SerializeField] TempPlayer player;
+    public Transform[] spawnPoints;
+
+    List<TempPlayer> spawnedPlayers = new List<TempPlayer>();
 
     public void Start()
     {
-        Declare<DeclareUser>(ReceivedSpawnUser);
+        Declare<Heartbeat>(ReceiveHeartbeat);
+        Declare<DeclareUser>(ReceivedDeclareUser);
+        Declare<UserList>(ReceiveUserList);
+        Declare<Disconnected>(ReceiveDisconnected);
+
+        client.client.Connect(ipAd, 25565);
     }
 
     void OnEnable() => Register(ReceivePacket);
@@ -32,28 +41,66 @@ public class TestClient : MonoBehaviour, PacketHandler
         Debug.Log("Received a undeclared packet: " + serializable.GetType());
     }
 
-    void ReceivedSpawnUser(ServerClient client, ISerializable serializable)
+    void ReceivedDeclareUser(ServerClient client, ISerializable serializable)
     {
         Debug.Log("Received a new Spawn User packet");
         DeclareUser spawnUser = (DeclareUser)serializable;
         client.ID = spawnUser.ID;
         myName = spawnUser.Name;
+        //SpawnPlayer(spawnUser);
+    }
+
+    void ReceiveUserList(ServerClient client, ISerializable serializable)
+    {
+        UserList userList = (UserList)serializable;
+        DeclareUser[] users = userList.users;
+
+        for(int i = 0; i < users.Length; i++)
+        {
+            SpawnPlayer(users[i]);
+        }
+    }
+
+    void SpawnPlayer(DeclareUser forUser)
+    {
+        if (ContainsPlayer(forUser)) return;
+        TempPlayer newPlayer = Instantiate(player);
+
+        newPlayer.SetID(forUser.ID);
+        newPlayer.SetName(forUser.Name);
+        {
+            newPlayer.transform.position = spawnPoints[spawnedPlayers.Count].position;
+        }
+        newPlayer.transform.parent = transform;
+        spawnedPlayers.Add(newPlayer);
+    }
+
+    bool ContainsPlayer(DeclareUser user)
+    {
+        foreach(TempPlayer player in spawnedPlayers)
+        {
+            if (player.ID == user.ID) return true;
+        }
+        return false;
+    }
+
+    void ReceiveDisconnected(ServerClient client, ISerializable serializable)
+    {
+        Disconnected disconnected = (Disconnected)serializable;
+        Debug.Log("Handle User Disconnection");
+
+        for(int i = spawnedPlayers.Count - 1; i >= 0; i--)
+        {
+            if (spawnedPlayers[i].ID == disconnected.disconnectedID)
+            {
+                Destroy(spawnedPlayers[i].gameObject);
+                spawnedPlayers.Remove(spawnedPlayers[i]);
+            }
+        }
     }
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.C)) client.client.Connect(ipAd, 25565);
-
-        if (Input.GetKeyDown(KeyCode.Space))
-            SendPacket(new shared.Score("testScore", 99));
-
-        if (Input.GetKeyDown(KeyCode.G))
-            SendPacket(new shared.AddRequest());
-
-        if (Input.GetKeyDown(KeyCode.B))
-            SendPacket(new shared.GetRequest());
-
-
         HandleReadPackets();
     }
 
@@ -104,4 +151,7 @@ public class TestClient : MonoBehaviour, PacketHandler
         GUI.Label(new Rect(transform.position.x * 720, transform.position.y * 720, 100, 100), client.ID.ToString() + " : " +  myName);
 
     }
+
+
+    void ReceiveHeartbeat(ServerClient client, ISerializable serializable) => SendPacket(serializable);
 }
