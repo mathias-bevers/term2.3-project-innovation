@@ -146,7 +146,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isPlayerControlled: 1
   maxSpeed: 10
-  speed: 25
+  speed: 125
 --- !u!54 &975262359247600828
 Rigidbody:
   m_ObjectHideFlags: 0

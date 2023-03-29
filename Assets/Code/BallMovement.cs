@@ -3,11 +3,11 @@ using UnityEngine;
 [RequireComponent(typeof(SphereCollider))]
 public class BallMovement : MonoBehaviour
 {
-	[SerializeField] private bool blockPlayerInput;
 	[SerializeField] private bool isPlayerControlled;
 	[SerializeField] private float maxSpeed = 100.0f;
 	[SerializeField] private float speed = 5.0f;
 
+	private bool blockPlayerInput;
 	private new Rigidbody rigidbody;
 	private new SphereCollider collider;
 	private Transform cachedTransform;
@@ -40,8 +40,8 @@ public class BallMovement : MonoBehaviour
 		}
 
 		input.Normalize();
-		input *= speed;
-		rigidbody.AddForce(input);
+		input *= speed * Time.fixedDeltaTime;
+		rigidbody.AddForce(input, ForceMode.Impulse);
 
 		if (rigidbody.velocity.magnitude <= maxSpeed) { return; }
 
@@ -56,7 +56,7 @@ public class BallMovement : MonoBehaviour
 		// This is an other player.
 		if (collision.collider.GetComponent<BallMovement>() == null) { return; }
 
-		rigidbody.AddExplosionForce(25f, collision.contacts[0].point, 0.5f, 1, ForceMode.Impulse);
+		rigidbody.AddExplosionForce(25f, collision.contacts[0].point, 0.5f, 1, ForceMode.VelocityChange);
 		blockPlayerInput = true;
 
 		CooldownManager.Cooldown(1.5f, () => blockPlayerInput = false);
