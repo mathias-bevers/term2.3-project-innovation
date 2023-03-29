@@ -9,7 +9,6 @@ using UnityEngine;
 public class MainServer : MonoBehaviour
 {
     [SerializeField] int maxPlayerCount = 4;
-    private IPAddress ipAd = IPAddress.Parse("192.168.2.10");
     private ServerListener server;
 
     private void Awake()
@@ -31,7 +30,7 @@ public class MainServer : MonoBehaviour
 
     public void StartServer() => server.Start();
     public void StopServer() => server.Stop();
-    public MainServer() => server = new ServerListener(ipAd, 5555, 4);
+    public MainServer() => server = new ServerListener(Settings.ip, Settings.port, 4);
     private void OnEnable() => server.Register(HandleClient);
     private void OnDisable() => server.Unregister(HandleClient);
     private void Update() => server.Update();
