@@ -14,6 +14,7 @@ public class MainServer : MonoBehaviour
     private void Awake()
     {
         server.Declare<Score>(HandleScore);
+        server.Declare<RequestNameChange>(HandleNameChange);
         StartServer();
     }
 
@@ -26,6 +27,20 @@ public class MainServer : MonoBehaviour
     {
         Score score = (Score)serializable;
         Debug.Log("Score: " + score.name + " : " + score.score);
+    }
+
+    void HandleNameChange(ServerClient client, ISerializable serializable)
+    {
+        RequestNameChange nameChange = (RequestNameChange)serializable;
+        string name = nameChange.Name;
+        if (name.Length <= 3) return;
+        if (name.Length > 12) return;
+        foreach(ServerClient cli in server.Clients)
+            if (cli.self.Name.ToLower() == name.ToLower()) 
+                return;
+
+        client.self.Name = nameChange.Name;
+        server.SendMessages(server.Clients, new RequestNameChange(client.ID, nameChange.Name));
     }
 
     public void StartServer() => server.Start();

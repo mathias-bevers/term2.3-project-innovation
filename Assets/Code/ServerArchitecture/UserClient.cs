@@ -12,6 +12,7 @@ public class UserClient : MonoBehaviour
     public ClientReader reader { get; set; }
 
     private ServerClient client = new ServerClient(new TcpClient(), -1);
+    public ServerClient Client { get => client; }
 
     UserData currentData;
     public UserData CurrentData { get => currentData; }
@@ -42,19 +43,27 @@ public class UserClient : MonoBehaviour
         {
             UserList ul = (UserList)serializable;
         }
+        if(serializable is Disconnected)
+        {
+            Disconnected disconnected = (Disconnected)serializable;
+            if(disconnected.ID == currentData.ID)
+            {
+                //You yourself disconnected. HANDLE IT!!!!!!
+            }
+            else
+            {
+                //Other gamer disconnected HANDLE IT!!!!!
+            }
+        }
     }
-
-
 
     public void SendPacket(ISerializable serializable)
     {
         Packet packet = new Packet();
         packet.Write(serializable);
-        try
-        {
+        try {
             StreamUtil.Write(client.stream, packet.GetBytes());
-        }
-        catch { }
+        } catch(Exception e) { Debug.LogError(e); }
     }
 
     void Awake() => DontDestroyOnLoad(this);

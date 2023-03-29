@@ -1,21 +1,13 @@
-﻿
-using shared;
+﻿using shared;
 
 public class Disconnected : ISerializable
 {
-    public int disconnectedID;
-
+    public int ID;
     public Disconnected() { }
 
-    public Disconnected(int disconnectedID) { this.disconnectedID= disconnectedID; }    
+    public Disconnected(int disconnectedID) { ID = disconnectedID; }    
 
-    public override void Deserialize(Packet pPacket)
-    {
-        disconnectedID = pPacket.ReadInt();
-    }
+    public override void Deserialize(Packet pPacket) { ID = pPacket.ReadInt(); }
 
-    public override void Serialize(Packet pPacket)
-    {
-        pPacket.Write(disconnectedID);
-    }
+    public override void Serialize(Packet pPacket) { pPacket.Write(ID); }
 }

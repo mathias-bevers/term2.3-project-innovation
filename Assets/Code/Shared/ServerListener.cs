@@ -124,7 +124,6 @@ public class ServerListener : TcpListener, PacketHandler
         }
     }
 
-
     Packet Convert(ISerializable serializable)
     {
         Packet packet = new Packet();
@@ -139,11 +138,10 @@ public class ServerListener : TcpListener, PacketHandler
             try
             {
                 if (client.client.Available == 0) continue;
-
+                
                 byte[] gottenBytes = StreamUtil.Read(client.client.GetStream());
                 Packet packet = new Packet(gottenBytes);
                 ISerializable current = packet.Read<ISerializable>();
-
                 bool earlyCatch = EarlyCatch(client, current);
 
                 Type storedType = current.GetType();
@@ -151,7 +149,7 @@ public class ServerListener : TcpListener, PacketHandler
                     callbacks[storedType]?.Invoke(client, current);
                 else if (!earlyCatch) reader?.Invoke(client, current);
             }
-            catch { }
+            catch(Exception e) { Debug.LogError(e); }
         }
     }
 

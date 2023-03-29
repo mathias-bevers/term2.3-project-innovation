@@ -5,7 +5,7 @@ using UnityEngine;
 public class DeclareUser : ISerializable
 {
     public int ID { get => _ID; }
-    public string Name { get => _UserName; }
+    public string Name { get => _UserName; set => _UserName = value; }
     public Vector3 Colour { get => _colour; }
 
     int _ID;

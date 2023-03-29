@@ -86,11 +86,10 @@ public class TestClient : MonoBehaviour, PacketHandler
     void ReceiveDisconnected(ServerClient client, ISerializable serializable)
     {
         Disconnected disconnected = (Disconnected)serializable;
-        Debug.Log("Handle User Disconnection");
 
         for(int i = spawnedPlayers.Count - 1; i >= 0; i--)
         {
-            if (spawnedPlayers[i].ID == disconnected.disconnectedID)
+            if (spawnedPlayers[i].ID == disconnected.ID)
             {
                 Destroy(spawnedPlayers[i].gameObject);
                 spawnedPlayers.Remove(spawnedPlayers[i]);

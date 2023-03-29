@@ -10,10 +10,12 @@ using UnityEngine;
 public class NetworkingBehaviour : MonoBehaviour
 {
     [Tooltip("This can be NULL! but if you want to overwrite the find, then make it not be")]
-    [SerializeField] UserClient overrideClient;
+    [SerializeField] internal UserClient overrideClient;
     Dictionary<Type, List<MethodInfo>> invokables = new Dictionary<Type, List<MethodInfo>>();
     //The method count variable might look a bit spaghetti, but it's used to track if it should or should not run the more expensive invoke algorithms
     int methodCount = 0;
+
+    public int ID { get => overrideClient.Client.ID; }
 
     private void Awake()
     {
@@ -66,19 +68,12 @@ public class NetworkingBehaviour : MonoBehaviour
     internal virtual void Awoken() { }
     internal virtual void Enabled() { }
     internal virtual void Disabled() { }
-    internal virtual void ReceivePacket(ServerClient client, ISerializable serializable) { Debug.Log("Received a packet: " + serializable.GetType()); }
+    internal virtual void ReceivePacket(ServerClient client, ISerializable serializable) { }
 
-    public static string GetLocalIPAddress()
+    internal void SendMessage(ISerializable message)
     {
-        var host = Dns.GetHostEntry(Dns.GetHostName());
-        foreach (var ip in host.AddressList)
-        {
-            if (ip.AddressFamily == AddressFamily.InterNetwork)
-            {
-                Debug.Log(ip.ToString());
-                return ip.ToString();
-            }
-        }
-        throw new Exception("No network adapters with an IPv4 address in the system!");
+        overrideClient.SendPacket(message);
     }
+
+    
 }
