@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 public class MainServer : MonoBehaviour
 {
@@ -18,6 +19,7 @@ public class MainServer : MonoBehaviour
         server.Declare<RequestNameChange>(HandleNameChange);
         server.Declare<Disconnected>(HandleDisconnect);
         server.Declare<ReadyRequest>(HandleReady);
+        server.Declare<AskLoadingEntered>(HandleLoadingEntered);
         StartServer();
     }
 
@@ -35,6 +37,11 @@ public class MainServer : MonoBehaviour
     {
         Score score = (Score)serializable;
         Debug.Log("Score: " + score.name + " : " + score.score);
+    }
+
+    void HandleLoadingEntered(ServerClient client, ISerializable serializable)
+    {
+        AskLoadingEntered hasLoaded = (AskLoadingEntered)serializable;
     }
 
     void HandleReady(ServerClient client, ISerializable readyRequest)
@@ -65,22 +72,38 @@ public class MainServer : MonoBehaviour
         server.Update();
 
         if (serverStates == ServerStates.Lobby) InLobby();
-        if (serverStates == ServerStates.Loading) Debug.Log("Handle Loading");
-
+        else if (serverStates == ServerStates.Loading) { }
     }
 
+    void DoSecondUpdate()
+    {
+        server.SecondUpdate();
+        if (serverStates == ServerStates.Lobby) { }
+        else if (serverStates == ServerStates.Loading) 
+        {
+            server.SendMessages(server.Clients, new AskLoadingEntered());
+        }
+    }
+
+    float counter = 0;
+    void DoFixedUpdate()
+    {
+        server.FixedUpdate();
+        counter += Time.fixedUnscaledDeltaTime;
+        if (counter >= 1)
+        {
+            counter = 0;
+            DoSecondUpdate();
+        }
+    }
 
     void InLobby()
     {
-        Debug.Log("Lobby gaming!");
         bool allReady = true;
         if (server.Clients.Count != Settings.maxPlayerCount) return;
         foreach (ServerClient client in server.Clients)
-        {
-            Debug.Log("Client: " + client.ID + ": " + client.isReady);
-            if (client.isReady == false)
+            if (!client.isReady)
                 allReady = false;
-        }
         if (!allReady) return;
 
         serverStates = ServerStates.Loading;
@@ -89,11 +112,11 @@ public class MainServer : MonoBehaviour
 
     public void StartServer() => server.Start();
     public void StopServer() => server.Stop();
-    public MainServer() => server = new ServerListener(Settings.serverIP, Settings.port, Settings.maxPlayerCount);
+    public MainServer() =>  server = new ServerListener(Settings.serverIP, Settings.port, Settings.maxPlayerCount);
     void OnEnable() =>      server.Register(HandleClient);
     void OnDisable() =>     server.Unregister(HandleClient);
     void Update() =>        DoUpdate();
-    void FixedUpdate() =>   server.FixedUpdate(); 
+    void FixedUpdate() =>   DoFixedUpdate();
 }
 
 

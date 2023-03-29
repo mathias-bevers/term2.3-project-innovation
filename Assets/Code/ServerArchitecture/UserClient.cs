@@ -17,10 +17,9 @@ public class UserClient : MonoBehaviour
     UserData currentData;
     public UserData CurrentData { get => currentData; }
 
-    List<UserData> allClients = new List<UserData>();
-
     void HandleReadPackets()
     {
+        if (client == null) return;
         if (client.Available == 0) return;
 
         byte[] gottenBytes = StreamUtil.Read(client.stream);
@@ -51,7 +50,7 @@ public class UserClient : MonoBehaviour
     }
 
     void Awake() => DontDestroyOnLoad(this);
-    void Start() => client.client.Connect(Settings.ip, Settings.port);
+    void Start() => client.client.Connect(new IPEndPoint(Settings.ip, Settings.port));
     void Update() => HandleReadPackets();
     void OnEnable() => Register(ReceivePacket);
     void OnDisable() => Unregister(ReceivePacket);

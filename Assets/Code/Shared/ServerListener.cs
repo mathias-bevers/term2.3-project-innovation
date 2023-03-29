@@ -10,15 +10,12 @@ using static PacketHandler;
 
 public class ServerListener : TcpListener, PacketHandler
 {
-
     public ServerListener(IPAddress localaddr, int port, int maxPlayerCount) : base(localaddr, port) { this.maxPlayerCount = maxPlayerCount; }
 
     readonly int maxPlayerCount = 4;
     bool _isRunning = false;
 
     int currentServerCount = 0;
-
-    float counter = 0;
 
     public bool IsRunning { get { return _isRunning; } }
 
@@ -69,17 +66,17 @@ public class ServerListener : TcpListener, PacketHandler
 
     public void FixedUpdate()
     {
-        counter += Time.fixedUnscaledDeltaTime;
-        if (counter >= 1)
+       
+    }
+
+    public void SecondUpdate()
+    {
+        foreach (ServerClient client in Clients)
         {
-            foreach (ServerClient client in Clients)
-            {
-                if (client.missedHeartbeats >= 3) client.markAsDead = true;
-                else client.missedHeartbeats++;
-            }
-            SendMessages(Clients, new Heartbeat(50));
-            counter = 0;
+            if (client.missedHeartbeats >= 3) client.markAsDead = true;
+            else client.missedHeartbeats++;
         }
+        SendMessages(Clients, new Heartbeat(50));
     }
 
     void RidDeadClients()
