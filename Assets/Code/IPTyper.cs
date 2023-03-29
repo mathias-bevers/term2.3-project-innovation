@@ -7,13 +7,11 @@ using UnityEngine.UI;
 
 public class IPTyper : MonoBehaviour
 {
-    public string sceneName = "Sample Scene";
+    public string sceneName = "SampleScene";
 
     public void OnIP(string ip)
     {
         Settings.ip = IPAddress.Parse(ip);
         SceneManager.LoadScene(sceneName);
     }
-
-
 }

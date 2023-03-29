@@ -1,8 +1,9 @@
-using shared;
+﻿using shared;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Schema;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class LobbyHandler : NetworkingBehaviour
@@ -18,6 +19,12 @@ public class LobbyHandler : NetworkingBehaviour
     UserData self;
 
     [SerializeField] InputField inputField;
+
+    [SerializeField] Button readyButton;
+    [SerializeField] Button backButton;
+    [SerializeField] Text readyText;
+
+    int lobbyPlayerCount = 0;
 
     internal override void Awoken()
     {
@@ -36,8 +43,25 @@ public class LobbyHandler : NetworkingBehaviour
     [NetworkRegistry(typeof(UserList))]
     public void Receive(ServerClient client, UserList list)
     {
-        foreach(DeclareUser item in list.users)
+        lobbyPlayerCount = list.users.Length;
+        bool lobbyAtMax = lobbyPlayerCount == Settings.maxPlayerCount;
+        readyButton.gameObject.SetActive(lobbyAtMax);
+
+        foreach (DeclareUser item in list.users)
             SpawnCharacter(item);
+    }
+
+    
+    [NetworkRegistry(typeof(ReadyRequest))]
+    public void Receive(ServerClient client, ReadyRequest readyRequest)
+    {
+        foreach (LobbyCharacter chara in spawnedChars)
+        {
+            if (chara.ID == readyRequest.ID)
+                chara.SetReady(readyRequest.Readied);
+            if (self.ID == chara.ID)
+                readyText.text = (chara.ready ? "Ready [✓]" : "Ready [X]");
+        }
     }
 
     [NetworkRegistry(typeof(Disconnected))]
@@ -49,9 +73,12 @@ public class LobbyHandler : NetworkingBehaviour
     [NetworkRegistry(typeof(RequestNameChange))]
     public void Receive(ServerClient client, RequestNameChange nameChange)
     {
-        foreach(LobbyCharacter chara in spawnedChars)
-            if(chara.ID == nameChange.ID)
+        foreach (LobbyCharacter chara in spawnedChars)
+        {
+            if (chara.ID == nameChange.ID)
                 chara.SetName(nameChange.Name);
+           
+        }
     }
 
     void SpawnCharacter(DeclareUser user)
@@ -100,5 +127,17 @@ public class LobbyHandler : NetworkingBehaviour
     public void SendNameRequest(string name)
     {
         SendMessage(new RequestNameChange(ID, name));
+    }
+
+    public void BackPressed()
+    {
+        Destroy(overrideClient.gameObject);
+        SceneManager.LoadScene("IPScene");
+    }
+
+    public void ReadyPressed()
+    {
+        self.ready = !self.ready;
+        SendMessage(new ReadyRequest(ID, self.ready));
     }
 }

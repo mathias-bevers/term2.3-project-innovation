@@ -71,6 +71,7 @@ public class UserClient : MonoBehaviour
     void Update() => HandleReadPackets();
     void OnEnable() => Register(ReceivePacket);
     void OnDisable() => Unregister(ReceivePacket);
+    void OnDestroy() => SendPacket(new Disconnected());
     public void Register(ClientReader reader) => this.reader += reader;
     public void Unregister(ClientReader reader) => this.reader -= reader;
 

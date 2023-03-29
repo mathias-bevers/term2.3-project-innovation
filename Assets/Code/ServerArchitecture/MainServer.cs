@@ -8,14 +8,22 @@ using UnityEngine;
 
 public class MainServer : MonoBehaviour
 {
-    [SerializeField] int maxPlayerCount = 4;
-    private ServerListener server;
+    ServerListener server;
 
-    private void Awake()
+    ServerStates serverStates = ServerStates.Lobby;
+
+    void Awake()
     {
         server.Declare<Score>(HandleScore);
         server.Declare<RequestNameChange>(HandleNameChange);
+        server.Declare<Disconnected>(HandleDisconnect);
+        server.Declare<ReadyRequest>(HandleReady);
         StartServer();
+    }
+
+    void HandleDisconnect(ServerClient client, ISerializable serializable)
+    {
+        server.DisconnectClient(client);
     }
 
     void HandleClient(ServerClient client, ISerializable serializable)
@@ -27,6 +35,12 @@ public class MainServer : MonoBehaviour
     {
         Score score = (Score)serializable;
         Debug.Log("Score: " + score.name + " : " + score.score);
+    }
+
+    void HandleReady(ServerClient client, ISerializable readyRequest)
+    {
+        ReadyRequest ready = (ReadyRequest)readyRequest;
+        server.SendMessages(server.Clients, new ReadyRequest(client.ID, ready.Readied));
     }
 
     void HandleNameChange(ServerClient client, ISerializable serializable)
@@ -43,11 +57,21 @@ public class MainServer : MonoBehaviour
         server.SendMessages(server.Clients, new RequestNameChange(client.ID, nameChange.Name));
     }
 
+
+
     public void StartServer() => server.Start();
     public void StopServer() => server.Stop();
-    public MainServer() => server = new ServerListener(Settings.ip, Settings.port, 4);
-    private void OnEnable() => server.Register(HandleClient);
-    private void OnDisable() => server.Unregister(HandleClient);
-    private void Update() => server.Update();
-    private void FixedUpdate() => server.FixedUpdate(); 
+    public MainServer() => server = new ServerListener(Settings.ip, Settings.port, Settings.maxPlayerCount);
+    void OnEnable() =>      server.Register(HandleClient);
+    void OnDisable() =>     server.Unregister(HandleClient);
+    void Update() =>        server.Update();
+    void FixedUpdate() =>   server.FixedUpdate(); 
+}
+
+
+enum ServerStates
+{
+    Lobby,
+    Loading,
+    Playing
 }
