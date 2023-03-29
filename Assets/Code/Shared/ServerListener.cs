@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.ConstrainedExecution;
 using UnityEngine;
 using static PacketHandler;
 
@@ -87,9 +88,16 @@ public class ServerListener : TcpListener, PacketHandler
         {
             ServerClient cur = Clients[i];
             if (!cur.markAsDead) continue;
-            Clients.Remove(cur);
-            SendMessages(Clients, new Disconnected(cur.ID));
+            DisconnectClient(cur);
         }
+    }
+
+    public void DisconnectClient(ServerClient client)
+    {
+        Clients.Remove(client);
+        SendMessages(Clients, new Disconnected(client.ID));
+        SendMessages(Clients, GenerateUserList());
+        OnPlayerCountChange();
     }
 
     void HandleNewClients()
@@ -99,13 +107,28 @@ public class ServerListener : TcpListener, PacketHandler
         ServerClient curClient = new ServerClient(AcceptTcpClient(), currentServerCount);
         _clients.Add(curClient);
         SendMessage(curClient, curClient.self);
+        SendMessages(_clients, GenerateUserList());
+        currentServerCount++;
+        OnPlayerCountChange();
+    }
+
+   UserList GenerateUserList()
+    {
         UserList list = new UserList();
         List<DeclareUser> users = new List<DeclareUser>();
         foreach (ServerClient client in _clients)
             users.Add(client.self);
         list.users = users.ToArray();
-        SendMessages(_clients, list);
-        currentServerCount++;
+        return list;
+    }
+
+    void OnPlayerCountChange()
+    {
+        foreach(ServerClient client in Clients)
+        {
+            client.isReady = false;
+            SendMessages(Clients, new ReadyRequest(client.ID, false));
+        }
     }
 
     internal void SendMessage(ServerClient client, ISerializable message) => SendMessages(new ServerClient[] { client }, message);
@@ -124,7 +147,6 @@ public class ServerListener : TcpListener, PacketHandler
         }
     }
 
-
     Packet Convert(ISerializable serializable)
     {
         Packet packet = new Packet();
@@ -134,16 +156,16 @@ public class ServerListener : TcpListener, PacketHandler
 
     void HandleClients()
     {
-        foreach (ServerClient client in _clients)
+        for(int i = _clients.Count -1; i >= 0; i--) 
         {
+            ServerClient client = _clients[i];
             try
             {
                 if (client.client.Available == 0) continue;
-
+                
                 byte[] gottenBytes = StreamUtil.Read(client.client.GetStream());
                 Packet packet = new Packet(gottenBytes);
                 ISerializable current = packet.Read<ISerializable>();
-
                 bool earlyCatch = EarlyCatch(client, current);
 
                 Type storedType = current.GetType();
@@ -151,7 +173,7 @@ public class ServerListener : TcpListener, PacketHandler
                     callbacks[storedType]?.Invoke(client, current);
                 else if (!earlyCatch) reader?.Invoke(client, current);
             }
-            catch { }
+            catch(Exception e) { Debug.LogError(e); }
         }
     }
 

@@ -20,6 +20,8 @@ public class ServerClient
 
     public bool markAsDead = false;
 
+    public bool isReady = false;
+
     public DeclareUser self;
 
     public ServerClient(TcpClient client, int id)

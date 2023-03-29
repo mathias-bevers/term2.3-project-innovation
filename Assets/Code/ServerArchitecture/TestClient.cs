@@ -9,7 +9,6 @@ using static PacketHandler;
 
 public class TestClient : MonoBehaviour, PacketHandler
 {
-    private IPAddress ipAd = IPAddress.Parse("127.0.0.1");
     ServerClient client = new ServerClient(new TcpClient(), -1);
 
     public Dictionary<Type, Action<ServerClient, ISerializable>> callbacks { get; set; } = new Dictionary<Type, Action<ServerClient, ISerializable>>();
@@ -29,7 +28,7 @@ public class TestClient : MonoBehaviour, PacketHandler
         Declare<UserList>(ReceiveUserList);
         Declare<Disconnected>(ReceiveDisconnected);
 
-        client.client.Connect(ipAd, 25565);
+        client.client.Connect(Settings.ip, Settings.port);
     }
 
     void OnEnable() => Register(ReceivePacket);
@@ -87,11 +86,10 @@ public class TestClient : MonoBehaviour, PacketHandler
     void ReceiveDisconnected(ServerClient client, ISerializable serializable)
     {
         Disconnected disconnected = (Disconnected)serializable;
-        Debug.Log("Handle User Disconnection");
 
         for(int i = spawnedPlayers.Count - 1; i >= 0; i--)
         {
-            if (spawnedPlayers[i].ID == disconnected.disconnectedID)
+            if (spawnedPlayers[i].ID == disconnected.ID)
             {
                 Destroy(spawnedPlayers[i].gameObject);
                 spawnedPlayers.Remove(spawnedPlayers[i]);
