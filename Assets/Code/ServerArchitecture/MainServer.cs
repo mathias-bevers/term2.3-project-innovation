@@ -89,7 +89,7 @@ public class MainServer : MonoBehaviour
 
     public void StartServer() => server.Start();
     public void StopServer() => server.Stop();
-    public MainServer() => server = new ServerListener(Settings.ip, Settings.port, Settings.maxPlayerCount);
+    public MainServer() => server = new ServerListener(Settings.serverIP, Settings.port, Settings.maxPlayerCount);
     void OnEnable() =>      server.Register(HandleClient);
     void OnDisable() =>     server.Unregister(HandleClient);
     void Update() =>        DoUpdate();
