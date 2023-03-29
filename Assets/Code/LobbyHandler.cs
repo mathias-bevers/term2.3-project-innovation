@@ -24,6 +24,9 @@ public class LobbyHandler : NetworkingBehaviour
     [SerializeField] Button backButton;
     [SerializeField] Text readyText;
 
+    [SerializeField] GameObject userCanvas;
+    [SerializeField] GameObject loadingCanvas;
+
     int lobbyPlayerCount = 0;
 
     internal override void Awoken()
@@ -79,6 +82,13 @@ public class LobbyHandler : NetworkingBehaviour
                 chara.SetName(nameChange.Name);
            
         }
+    }
+
+    [NetworkRegistry(typeof(ForceLoading))]
+    public void Receive(ServerClient client, ForceLoading loading)
+    {
+        userCanvas?.SetActive(false);
+        loadingCanvas?.SetActive(true);
     }
 
     void SpawnCharacter(DeclareUser user)

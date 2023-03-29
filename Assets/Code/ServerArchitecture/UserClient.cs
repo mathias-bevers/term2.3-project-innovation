@@ -39,22 +39,6 @@ public class UserClient : MonoBehaviour
             DeclareUser du = (DeclareUser)serializable; 
             currentData = new UserData(du.ID, du.Name, du.Colour); 
         }
-        if(serializable is UserList)
-        {
-            UserList ul = (UserList)serializable;
-        }
-        if(serializable is Disconnected)
-        {
-            Disconnected disconnected = (Disconnected)serializable;
-            if(disconnected.ID == currentData.ID)
-            {
-                //You yourself disconnected. HANDLE IT!!!!!!
-            }
-            else
-            {
-                //Other gamer disconnected HANDLE IT!!!!!
-            }
-        }
     }
 
     public void SendPacket(ISerializable serializable)
