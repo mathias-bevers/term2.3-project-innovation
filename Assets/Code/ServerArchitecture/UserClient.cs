@@ -7,9 +7,10 @@ using System.Net;
 using UnityEngine;
 using static PacketHandler;
 
-public class UserClient : MonoBehaviour, IRegistrable
+public class UserClient : IRegistrable
 {
-    public ClientReader reader { get; set; }
+    public override ClientReader reader { get; set; }
+    public override int ID => client.ID;
 
     private ServerClient client = new ServerClient(new TcpClient(), -1);
     public ServerClient Client { get => client; }
@@ -17,7 +18,7 @@ public class UserClient : MonoBehaviour, IRegistrable
     UserData currentData;
     public UserData CurrentData { get => currentData; }
 
-    public int ID => client.ID;
+
 
     void HandleReadPackets()
     {
@@ -42,7 +43,7 @@ public class UserClient : MonoBehaviour, IRegistrable
         }
     }
 
-    public void SendPacket(ISerializable serializable)
+    public override void SendPacket(ISerializable serializable)
     {
         Packet packet = new Packet();
         packet.Write(serializable);
@@ -57,8 +58,8 @@ public class UserClient : MonoBehaviour, IRegistrable
     void OnEnable() => Register(ReceivePacket);
     void OnDisable() => Unregister(ReceivePacket);
     void OnDestroy() => SendPacket(new Disconnected());
-    public void Register(ClientReader reader) => this.reader += reader;
-    public void Unregister(ClientReader reader) => this.reader -= reader;
+    public override void Register(ClientReader reader) => this.reader += reader;
+    public override void Unregister(ClientReader reader) => this.reader -= reader;
 
 
 }

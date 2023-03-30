@@ -8,7 +8,7 @@ using System.Runtime.ConstrainedExecution;
 using UnityEngine;
 using static PacketHandler;
 
-public class ServerListener : TcpListener, PacketHandler, IRegistrable
+public class ServerListener : TcpListener, PacketHandler
 {
     public ServerListener(IPAddress localaddr, int port, int maxPlayerCount) : base(localaddr, port) { this.maxPlayerCount = maxPlayerCount; }
 

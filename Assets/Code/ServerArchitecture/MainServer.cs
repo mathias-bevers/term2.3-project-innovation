@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using Unity.VisualScripting;
+using UnityEditor.PackageManager;
 using UnityEngine;
+using static PacketHandler;
 using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
-public class MainServer : MonoBehaviour, IRegistrable
+public class MainServer : IRegistrable
 {
     ServerListener server;
 
@@ -87,9 +89,8 @@ public class MainServer : MonoBehaviour, IRegistrable
 
     float counter = 0;
 
-    public PacketHandler.ClientReader reader { get => server.reader; set => server.reader = value; }
-
-    public int ID => server.ID;
+    public override ClientReader reader { get => server.reader; set => server.reader = value; }
+    public override int ID => server.ID;
 
     void DoFixedUpdate()
     {
@@ -123,17 +124,17 @@ public class MainServer : MonoBehaviour, IRegistrable
     void Update() =>        DoUpdate();
     void FixedUpdate() =>   DoFixedUpdate();
 
-    public void Register(PacketHandler.ClientReader reader)
+    public override void Register(PacketHandler.ClientReader reader)
     {
         server.Register(reader);
     }
 
-    public void Unregister(PacketHandler.ClientReader reader)
+    public override void Unregister(PacketHandler.ClientReader reader)
     {
         server.Unregister(reader);
     }
 
-    public void SendPacket(ISerializable serializable)
+    public override void SendPacket(ISerializable serializable)
     {
        server.SendPacket(serializable);
     }

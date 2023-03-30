@@ -38,7 +38,11 @@ public class LobbyHandler : NetworkingBehaviour
     [NetworkRegistry(typeof(DeclareUser))]
     public void Receive(ServerClient client, DeclareUser user)
     {
-        self = overrideClient.CurrentData;
+        if (overrideClient is UserClient)
+        {
+            UserClient userClient = overrideClient as UserClient;
+            self = userClient.CurrentData;
+        }
         inputField.SetTextWithoutNotify(self.Name);
         
     }
@@ -141,7 +145,11 @@ public class LobbyHandler : NetworkingBehaviour
 
     public void BackPressed()
     {
-        Destroy(overrideClient.gameObject);
+        if (overrideClient is UserClient)
+        {
+            UserClient userClient = overrideClient as UserClient;
+            Destroy(userClient.gameObject);
+        }
         SceneManager.LoadScene("IPScene");
     }
 
