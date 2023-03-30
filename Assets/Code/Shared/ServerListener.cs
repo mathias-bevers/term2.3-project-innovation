@@ -8,7 +8,7 @@ using System.Runtime.ConstrainedExecution;
 using UnityEngine;
 using static PacketHandler;
 
-public class ServerListener : TcpListener, PacketHandler
+public class ServerListener : TcpListener, PacketHandler, IRegistrable
 {
     public ServerListener(IPAddress localaddr, int port, int maxPlayerCount) : base(localaddr, port) { this.maxPlayerCount = maxPlayerCount; }
 
@@ -39,6 +39,8 @@ public class ServerListener : TcpListener, PacketHandler
     }
 
     public Dictionary<Type, Action<ServerClient, ISerializable>> callbacks { get; set; } = new Dictionary<Type, Action<ServerClient, ISerializable>>();
+
+    public int ID => -1;
 
     public void Declare<T>(Action<ServerClient, ISerializable> callback) where T : ISerializable
     {
@@ -184,5 +186,10 @@ public class ServerListener : TcpListener, PacketHandler
         }
 
         return false;
+    }
+
+    public void SendPacket(ISerializable serializable)
+    {
+        SendMessages(Clients, serializable);
     }
 }

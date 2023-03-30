@@ -10,12 +10,12 @@ using UnityEngine;
 public class NetworkingBehaviour : MonoBehaviour
 {
     [Tooltip("This can be NULL! but if you want to overwrite the find, then make it not be")]
-    [SerializeField] internal UserClient overrideClient;
+    [SerializeField] internal IRegistrable overrideClient;
     Dictionary<Type, List<MethodInfo>> invokables = new Dictionary<Type, List<MethodInfo>>();
     //The method count variable might look a bit spaghetti, but it's used to track if it should or should not run the more expensive invoke algorithms
     int methodCount = 0;
 
-    public int ID { get => overrideClient.Client.ID; }
+    public int ID { get => overrideClient?.ID ?? -1; }
 
     private void Awake()
     {
@@ -25,14 +25,12 @@ public class NetworkingBehaviour : MonoBehaviour
 
     private void OnEnable()
     {
-        overrideClient ??= FindObjectOfType<UserClient>();
         overrideClient?.Register(BaseReceivePacket);
         Enabled();
     }
 
     private void OnDisable()
     {
-        overrideClient ??= FindObjectOfType<UserClient>();
         overrideClient?.Unregister(BaseReceivePacket);
         Disabled();
     }
@@ -72,7 +70,7 @@ public class NetworkingBehaviour : MonoBehaviour
 
     internal void SendMessage(ISerializable message)
     {
-        overrideClient.SendPacket(message);
+        overrideClient?.SendPacket(message);
     }
 
     

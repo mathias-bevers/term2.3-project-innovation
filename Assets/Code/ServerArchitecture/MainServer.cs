@@ -7,7 +7,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
-public class MainServer : MonoBehaviour
+public class MainServer : MonoBehaviour, IRegistrable
 {
     ServerListener server;
 
@@ -86,6 +86,11 @@ public class MainServer : MonoBehaviour
     }
 
     float counter = 0;
+
+    public PacketHandler.ClientReader reader { get => server.reader; set => server.reader = value; }
+
+    public int ID => server.ID;
+
     void DoFixedUpdate()
     {
         server.FixedUpdate();
@@ -117,6 +122,21 @@ public class MainServer : MonoBehaviour
     void OnDisable() =>     server.Unregister(HandleClient);
     void Update() =>        DoUpdate();
     void FixedUpdate() =>   DoFixedUpdate();
+
+    public void Register(PacketHandler.ClientReader reader)
+    {
+        server.Register(reader);
+    }
+
+    public void Unregister(PacketHandler.ClientReader reader)
+    {
+        server.Unregister(reader);
+    }
+
+    public void SendPacket(ISerializable serializable)
+    {
+       server.SendPacket(serializable);
+    }
 }
 
 

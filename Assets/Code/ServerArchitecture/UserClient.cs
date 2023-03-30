@@ -7,7 +7,7 @@ using System.Net;
 using UnityEngine;
 using static PacketHandler;
 
-public class UserClient : MonoBehaviour
+public class UserClient : MonoBehaviour, IRegistrable
 {
     public ClientReader reader { get; set; }
 
@@ -16,6 +16,8 @@ public class UserClient : MonoBehaviour
 
     UserData currentData;
     public UserData CurrentData { get => currentData; }
+
+    public int ID => client.ID;
 
     void HandleReadPackets()
     {
