@@ -35,8 +35,8 @@ public class LobbyHandler : NetworkingBehaviour
             freePoints.Add(i);
     }
 
-    [NetworkRegistry(typeof(DeclareUser))]
-    public void Receive(ServerClient client, DeclareUser user)
+    [NetworkRegistry(typeof(DeclareUser), TrafficDirection.Received)]
+    public void Receive(ServerClient client, DeclareUser user, TrafficDirection direction)
     {
         if (overrideClient is UserClient)
         {
@@ -44,11 +44,11 @@ public class LobbyHandler : NetworkingBehaviour
             self = userClient.CurrentData;
         }
         inputField.SetTextWithoutNotify(self.Name);
-        
+        userCanvas?.SetActive(true);
     }
     
-    [NetworkRegistry(typeof(UserList))]
-    public void Receive(ServerClient client, UserList list)
+    [NetworkRegistry(typeof(UserList), TrafficDirection.Received)]
+    public void Receive(ServerClient client, UserList list, TrafficDirection direction)
     {
         lobbyPlayerCount = list.users.Length;
         bool lobbyAtMax = lobbyPlayerCount == Settings.maxPlayerCount;
@@ -59,8 +59,8 @@ public class LobbyHandler : NetworkingBehaviour
     }
 
     
-    [NetworkRegistry(typeof(ReadyRequest))]
-    public void Receive(ServerClient client, ReadyRequest readyRequest)
+    [NetworkRegistry(typeof(ReadyRequest), TrafficDirection.Received)]
+    public void Receive(ServerClient client, ReadyRequest readyRequest, TrafficDirection direction)
     {
         foreach (LobbyCharacter chara in spawnedChars)
         {
@@ -71,14 +71,14 @@ public class LobbyHandler : NetworkingBehaviour
         }
     }
 
-    [NetworkRegistry(typeof(Disconnected))]
-    public void Receive(ServerClient client, Disconnected disconnected)
+    [NetworkRegistry(typeof(Disconnected), TrafficDirection.Received)]
+    public void Receive(ServerClient client, Disconnected disconnected, TrafficDirection direction)
     {
         RemoveCharacter(disconnected.ID);
     }
 
-    [NetworkRegistry(typeof(RequestNameChange))]
-    public void Receive(ServerClient client, RequestNameChange nameChange)
+    [NetworkRegistry(typeof(RequestNameChange), TrafficDirection.Received)]
+    public void Receive(ServerClient client, RequestNameChange nameChange, TrafficDirection direction)
     {
         foreach (LobbyCharacter chara in spawnedChars)
         {
@@ -88,8 +88,8 @@ public class LobbyHandler : NetworkingBehaviour
         }
     }
 
-    [NetworkRegistry(typeof(ForceLoading))]
-    public void Receive(ServerClient client, ForceLoading loading)
+    [NetworkRegistry(typeof(ForceLoading), TrafficDirection.Received)]
+    public void Receive(ServerClient client, ForceLoading loading, TrafficDirection direction)
     {
         userCanvas?.SetActive(false);
         loadingCanvas?.SetActive(true);

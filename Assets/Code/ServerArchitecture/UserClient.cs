@@ -29,12 +29,12 @@ public class UserClient : IRegistrable
         Packet packet = new Packet(gottenBytes);
         ISerializable current = packet.Read<ISerializable>();
 
-        Type storedType = current.GetType();
-        reader?.Invoke(client, current);
+        reader?.Invoke(client, current, TrafficDirection.Received);
     }
 
-    void ReceivePacket(ServerClient client, ISerializable serializable)
+    void ReceivePacket(ServerClient client, ISerializable serializable, TrafficDirection trafficDirection)
     {
+        if (trafficDirection != TrafficDirection.Received) return;
         if (serializable is Heartbeat) SendPacket(serializable);
         if (serializable is DeclareUser) 
         { 
@@ -48,6 +48,7 @@ public class UserClient : IRegistrable
         Packet packet = new Packet();
         packet.Write(serializable);
         try {
+            reader?.Invoke(client, serializable, TrafficDirection.Send);
             StreamUtil.Write(client.stream, packet.GetBytes());
         } catch(Exception e) { Debug.LogError(e); }
     }

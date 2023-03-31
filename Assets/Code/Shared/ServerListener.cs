@@ -38,11 +38,11 @@ public class ServerListener : TcpListener, PacketHandler
         base.Stop();
     }
 
-    public Dictionary<Type, Action<ServerClient, ISerializable>> callbacks { get; set; } = new Dictionary<Type, Action<ServerClient, ISerializable>>();
+    public Dictionary<Type, NetworkedCallback> callbacks { get; set; } = new Dictionary<Type, NetworkedCallback>();
 
     public int ID => -1;
 
-    public void Declare<T>(Action<ServerClient, ISerializable> callback) where T : ISerializable
+    public void Declare<T>(NetworkedCallback callback) where T : ISerializable
     {
         if (!callbacks.ContainsKey(typeof(T)))
             callbacks.Add(typeof(T), callback);
@@ -140,6 +140,7 @@ public class ServerListener : TcpListener, PacketHandler
         {
             try
             {
+                reader?.Invoke(client, message, TrafficDirection.Send);
                 StreamUtil.Write(client.stream, packetBytes);
             }
             catch { }
@@ -169,8 +170,8 @@ public class ServerListener : TcpListener, PacketHandler
 
                 Type storedType = current.GetType();
                 if (callbacks.ContainsKey(storedType))
-                    callbacks[storedType]?.Invoke(client, current);
-                else if (!earlyCatch) reader?.Invoke(client, current);
+                    callbacks[storedType]?.Invoke(client, current, TrafficDirection.Received);
+                else if (!earlyCatch) reader?.Invoke(client, current, TrafficDirection.Received);
             }
             catch(Exception e) { Debug.LogError(e); }
         }

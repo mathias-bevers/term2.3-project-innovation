@@ -1,13 +1,6 @@
 using shared;
-using System.Collections;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Sockets;
-using Unity.VisualScripting;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using static PacketHandler;
-using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 public class MainServer : IRegistrable
 {
@@ -17,36 +10,36 @@ public class MainServer : IRegistrable
 
     void Awake()
     {
-        server.Declare<Score>(HandleScore);
-        server.Declare<RequestNameChange>(HandleNameChange);
-        server.Declare<Disconnected>(HandleDisconnect);
-        server.Declare<ReadyRequest>(HandleReady);
-        server.Declare<AskLoadingEntered>(HandleLoadingEntered);
+        server.Declare<Score>(new NetworkedCallback(HandleScore, TrafficDirection.Received));
+        server.Declare<RequestNameChange>(new NetworkedCallback(HandleNameChange, TrafficDirection.Received));
+        server.Declare<Disconnected>(new NetworkedCallback(HandleDisconnect, TrafficDirection.Both));
+        server.Declare<ReadyRequest>(new NetworkedCallback(HandleReady, TrafficDirection.Received));
+        server.Declare<AskLoadingEntered>(new NetworkedCallback(HandleLoadingEntered, TrafficDirection.Send));
         StartServer();
     }
 
-    void HandleDisconnect(ServerClient client, ISerializable serializable)
+    void HandleDisconnect(ServerClient client, ISerializable serializable, TrafficDirection direction)
     {
         server.DisconnectClient(client);
     }
 
-    void HandleClient(ServerClient client, ISerializable serializable)
+    void HandleClient(ServerClient client, ISerializable serializable, TrafficDirection direction)
     {
-        Debug.Log("Other Packet: " + serializable.GetType());
+        //Debug.Log("Other Packet: " + serializable.GetType());
     }
 
-    void HandleScore(ServerClient client, ISerializable serializable)
+    void HandleScore(ServerClient client, ISerializable serializable, TrafficDirection direction)
     {
         Score score = (Score)serializable;
         Debug.Log("Score: " + score.name + " : " + score.score);
     }
 
-    void HandleLoadingEntered(ServerClient client, ISerializable serializable)
+    void HandleLoadingEntered(ServerClient client, ISerializable serializable, TrafficDirection direction)
     {
         AskLoadingEntered hasLoaded = (AskLoadingEntered)serializable;
     }
 
-    void HandleReady(ServerClient client, ISerializable readyRequest)
+    void HandleReady(ServerClient client, ISerializable readyRequest, TrafficDirection direction)
     {
         ReadyRequest ready = (ReadyRequest)readyRequest;
         foreach(ServerClient client2 in server.Clients)
@@ -55,7 +48,7 @@ public class MainServer : IRegistrable
         server.SendMessages(server.Clients, new ReadyRequest(client.ID, ready.Readied));
     }
 
-    void HandleNameChange(ServerClient client, ISerializable serializable)
+    void HandleNameChange(ServerClient client, ISerializable serializable, TrafficDirection direction)
     {
         RequestNameChange nameChange = (RequestNameChange)serializable;
         string name = nameChange.Name;

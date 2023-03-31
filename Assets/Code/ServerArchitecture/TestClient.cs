@@ -11,7 +11,7 @@ public class TestClient : MonoBehaviour, PacketHandler
 {
     ServerClient client = new ServerClient(new TcpClient(), -1);
 
-    public Dictionary<Type, Action<ServerClient, ISerializable>> callbacks { get; set; } = new Dictionary<Type, Action<ServerClient, ISerializable>>();
+    public Dictionary<Type, NetworkedCallback> callbacks { get; set; } = new Dictionary<Type, NetworkedCallback>();
     public ClientReader reader { get; set; }
 
     string myName = string.Empty;
@@ -23,10 +23,10 @@ public class TestClient : MonoBehaviour, PacketHandler
 
     public void Start()
     {
-        Declare<Heartbeat>(ReceiveHeartbeat);
-        Declare<DeclareUser>(ReceivedDeclareUser);
-        Declare<UserList>(ReceiveUserList);
-        Declare<Disconnected>(ReceiveDisconnected);
+        Declare<Heartbeat>(new NetworkedCallback(ReceiveHeartbeat, TrafficDirection.Received));
+        Declare<DeclareUser>(new NetworkedCallback(ReceivedDeclareUser, TrafficDirection.Received));
+        Declare<UserList>(new NetworkedCallback(ReceiveUserList, TrafficDirection.Received));
+        Declare<Disconnected>(new NetworkedCallback(ReceiveDisconnected, TrafficDirection.Received));
 
         client.client.Connect(Settings.ip, Settings.port);
     }
@@ -35,12 +35,13 @@ public class TestClient : MonoBehaviour, PacketHandler
     void OnDisable() => Unregister(ReceivePacket);
     
 
-    void ReceivePacket(ServerClient client, ISerializable serializable)
+    void ReceivePacket(ServerClient client, ISerializable serializable, TrafficDirection trafficDirection)
     {
+        if (trafficDirection != TrafficDirection.Received) return;
         Debug.Log("Received a undeclared packet: " + serializable.GetType());
     }
 
-    void ReceivedDeclareUser(ServerClient client, ISerializable serializable)
+    void ReceivedDeclareUser(ServerClient client, ISerializable serializable, TrafficDirection direction)
     {
         Debug.Log("Received a new Spawn User packet");
         DeclareUser spawnUser = (DeclareUser)serializable;
@@ -49,7 +50,7 @@ public class TestClient : MonoBehaviour, PacketHandler
         //SpawnPlayer(spawnUser);
     }
 
-    void ReceiveUserList(ServerClient client, ISerializable serializable)
+    void ReceiveUserList(ServerClient client, ISerializable serializable, TrafficDirection direction)
     {
         UserList userList = (UserList)serializable;
         DeclareUser[] users = userList.users;
@@ -83,7 +84,7 @@ public class TestClient : MonoBehaviour, PacketHandler
         return false;
     }
 
-    void ReceiveDisconnected(ServerClient client, ISerializable serializable)
+    void ReceiveDisconnected(ServerClient client, ISerializable serializable, TrafficDirection direction)
     {
         Disconnected disconnected = (Disconnected)serializable;
 
@@ -112,8 +113,8 @@ public class TestClient : MonoBehaviour, PacketHandler
 
         Type storedType = current.GetType();
         if (callbacks.ContainsKey(storedType))
-            callbacks[storedType]?.Invoke(client, current);
-        else reader?.Invoke(client, current);
+            callbacks[storedType]?.Invoke(client, current, TrafficDirection.Received);
+        else reader?.Invoke(client, current, TrafficDirection.Received);
     }
 
     void SendPacket(ISerializable serializable)
@@ -127,7 +128,7 @@ public class TestClient : MonoBehaviour, PacketHandler
         catch { }
     }
 
-    public void Declare<T>(Action<ServerClient, ISerializable> callback) where T : ISerializable
+    public void Declare<T>(NetworkedCallback callback) where T : ISerializable
     {
         if (!callbacks.ContainsKey(typeof(T)))
             callbacks.Add(typeof(T), callback);
@@ -147,9 +148,8 @@ public class TestClient : MonoBehaviour, PacketHandler
     {
         GUI.matrix = Matrix4x4.Scale((Screen.width / 1080) * Vector3.one);
         GUI.Label(new Rect(transform.position.x * 720, transform.position.y * 720, 100, 100), client.ID.ToString() + " : " +  myName);
-
     }
 
 
-    void ReceiveHeartbeat(ServerClient client, ISerializable serializable) => SendPacket(serializable);
+    void ReceiveHeartbeat(ServerClient client, ISerializable serializable, TrafficDirection direction) => SendPacket(serializable);
 }
