@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BaseLobbyHandler : NetworkingBehaviour
 {
@@ -15,6 +16,30 @@ public class BaseLobbyHandler : NetworkingBehaviour
 
 
     internal UserData self = new UserData(-1);
+
+    [SerializeField] GameObject loadingCanvas;
+
+    float timer = 0;
+    bool startLoading = false;
+
+    private void Update()
+    {
+        if (!startLoading) return;
+        if (timer > 0) timer -= Time.deltaTime;
+        if (timer <= 0)
+        {
+            startLoading = false;
+            SceneManager.LoadScene("LoadingScene");
+        }
+    }
+
+    [NetworkRegistry(typeof(ForceLoading), TrafficDirection.Both)]
+    public void BaseReceive(ServerClient client, ForceLoading loading, TrafficDirection direction)
+    {
+        loadingCanvas?.SetActive(true);
+        timer = 2;
+        startLoading = true;
+    }
 
     [NetworkRegistry(typeof(UserList), TrafficDirection.Both)]
     public void BaseReceive(ServerClient client, UserList list, TrafficDirection direction)
@@ -41,7 +66,7 @@ public class BaseLobbyHandler : NetworkingBehaviour
 
 
     [NetworkRegistry(typeof(RequestNameChange), TrafficDirection.Both)]
-    public void Receive(ServerClient client, RequestNameChange nameChange, TrafficDirection direction)
+    public void BaseReceive(ServerClient client, RequestNameChange nameChange, TrafficDirection direction)
     {
         foreach (LobbyCharacter chara in spawnedChars)
         {

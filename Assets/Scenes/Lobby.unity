@@ -767,12 +767,12 @@ MonoBehaviour:
   - {fileID: 2118041826}
   - {fileID: 296759143}
   - {fileID: 2126232314}
+  loadingCanvas: {fileID: 1938045447}
   inputField: {fileID: 924081942}
   readyButton: {fileID: 43540012}
   backButton: {fileID: 1654183599}
   readyText: {fileID: 2029390311}
   userCanvas: {fileID: 153919572}
-  loadingCanvas: {fileID: 1938045447}
 --- !u!114 &986968074
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -792,6 +792,7 @@ MonoBehaviour:
   - {fileID: 2118041826}
   - {fileID: 296759143}
   - {fileID: 2126232314}
+  loadingCanvas: {fileID: 1938045447}
 --- !u!1 &1030964227
 GameObject:
   m_ObjectHideFlags: 0

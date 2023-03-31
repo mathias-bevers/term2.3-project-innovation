@@ -15,7 +15,7 @@ public class LobbyHandler : BaseLobbyHandler
     [SerializeField] Text readyText;
 
     [SerializeField] GameObject userCanvas;
-    [SerializeField] GameObject loadingCanvas;
+
 
     int lobbyPlayerCount = 0;
 
@@ -59,7 +59,6 @@ public class LobbyHandler : BaseLobbyHandler
     public void Receive(ServerClient client, ForceLoading loading, TrafficDirection direction)
     {
         userCanvas?.SetActive(false);
-        loadingCanvas?.SetActive(true);
     }
 
     public void SendNameRequest(string name)

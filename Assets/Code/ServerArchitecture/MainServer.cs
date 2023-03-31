@@ -10,7 +10,7 @@ public class MainServer : IRegistrable
 
     void Awake()
     {
-        server.Declare<Score>(new NetworkedCallback(HandleScore, TrafficDirection.Received));
+        DontDestroyOnLoad(this);
         server.Declare<RequestNameChange>(new NetworkedCallback(HandleNameChange, TrafficDirection.Received));
         server.Declare<Disconnected>(new NetworkedCallback(HandleDisconnect, TrafficDirection.Both));
         server.Declare<ReadyRequest>(new NetworkedCallback(HandleReady, TrafficDirection.Received));
@@ -25,13 +25,7 @@ public class MainServer : IRegistrable
 
     void HandleClient(ServerClient client, ISerializable serializable, TrafficDirection direction)
     {
-        //Debug.Log("Other Packet: " + serializable.GetType());
-    }
-
-    void HandleScore(ServerClient client, ISerializable serializable, TrafficDirection direction)
-    {
-        Score score = (Score)serializable;
-        Debug.Log("Score: " + score.name + " : " + score.score);
+        
     }
 
     void HandleLoadingEntered(ServerClient client, ISerializable serializable, TrafficDirection direction)
