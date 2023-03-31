@@ -1,10 +1,8 @@
 using shared;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.ConstrainedExecution;
 using UnityEngine;
 using static PacketHandler;
 
@@ -136,6 +134,7 @@ public class ServerListener : TcpListener, PacketHandler
     {
         Packet sendPacket = Convert(message);
         byte[] packetBytes = sendPacket.GetBytes();
+        if (clients.Length == 0) reader?.Invoke(null, message, TrafficDirection.Send);
         foreach (ServerClient client in clients)
         {
             try
@@ -169,9 +168,10 @@ public class ServerListener : TcpListener, PacketHandler
                 bool earlyCatch = EarlyCatch(client, current);
 
                 Type storedType = current.GetType();
+                if (!earlyCatch) reader?.Invoke(client, current, TrafficDirection.Received);
                 if (callbacks.ContainsKey(storedType))
                     callbacks[storedType]?.Invoke(client, current, TrafficDirection.Received);
-                else if (!earlyCatch) reader?.Invoke(client, current, TrafficDirection.Received);
+
             }
             catch(Exception e) { Debug.LogError(e); }
         }

@@ -76,7 +76,7 @@ public class NetworkingBehaviour : MonoBehaviour
         foreach (DirectionalMethodInfo info in invokables[seriType])
         {
             bool pass = false;
-            if (direction == TrafficDirection.Both) pass = true;
+            if (info.Direction == TrafficDirection.Both) pass = true;
             if (direction == info.Direction) pass = true;
             if (!pass) continue;
             info.MethodInfo.Invoke(this, new object[] { client, serializable, direction });
