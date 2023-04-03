@@ -17,7 +17,11 @@ public class GameplayCharacter : IDedNetworkingBehaviour
 
     private void Update()
     {
-        Vector2 input = lastInput * Time.deltaTime * 20;
+        
+        Vector2 input = lastInput ;
+        if (input.magnitude > 1)
+            input.Normalize();
+        input *= Time.deltaTime * 20;
         transform.position += new Vector3(input.x, 0, input.y);
     }
 }
