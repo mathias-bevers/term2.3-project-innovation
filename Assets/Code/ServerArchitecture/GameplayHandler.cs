@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameplayHandler : NetworkingBehaviour
 {
@@ -10,14 +11,22 @@ public class GameplayHandler : NetworkingBehaviour
 
     List<GameplayCharacter> spawnedCharacters = new List<GameplayCharacter>();
 
-    [NetworkRegistry(typeof(UserList), TrafficDirection.Send)]
-    public void Receive(ServerClient client, UserList list, TrafficDirection direction)
+    public void Start()
+    {
+        Debug.Log("Started!");
+        SceneManager.SetActiveScene(SceneManager.GetSceneByName("GameplayScene"));
+        Receive(FindObjectOfType<MainServer>().GetUserList());
+    }
+
+    public void Receive(UserList list)
     {
         if (character == null) return;
         for (int i = 0; i < pointList.Count; i++)
         {
+            Debug.Log("Loop!");
             GameplayCharacter newCharacter = Instantiate(character);
             spawnedCharacters.Add(newCharacter);
+            newCharacter.ID = list[i].ID;
             newCharacter.transform.position = pointList[i].position;
             newCharacter.transform.LookAt(arenaMiddle.transform);
         }
