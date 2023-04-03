@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Follow : MonoBehaviour
 {
-	[SerializeField] private Transform target;
+	[SerializeField, ForceInitialization] private Transform target;
 
 	private Transform cachedTransform;
 	private Vector3 offset;
