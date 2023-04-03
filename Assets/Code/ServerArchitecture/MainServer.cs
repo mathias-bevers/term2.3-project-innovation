@@ -8,7 +8,7 @@ public class MainServer : IRegistrable
 
     ServerStates serverStates = ServerStates.Lobby;
 
-    void Awake()
+    protected override void Awake()
     {
         DontDestroyOnLoad(this);
         server.Declare<RequestNameChange>(new NetworkedCallback(HandleNameChange, TrafficDirection.Received));
