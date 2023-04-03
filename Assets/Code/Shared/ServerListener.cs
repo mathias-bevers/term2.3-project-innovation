@@ -66,7 +66,7 @@ public class ServerListener : TcpListener, PacketHandler
 
     public void FixedUpdate()
     {
-       
+
     }
 
     public void SecondUpdate()
@@ -109,7 +109,7 @@ public class ServerListener : TcpListener, PacketHandler
         OnPlayerCountChange();
     }
 
-   UserList GenerateUserList()
+    public UserList GenerateUserList()
     {
         UserList list = new UserList();
         List<DeclareUser> users = new List<DeclareUser>();
@@ -121,7 +121,7 @@ public class ServerListener : TcpListener, PacketHandler
 
     void OnPlayerCountChange()
     {
-        foreach(ServerClient client in Clients)
+        foreach (ServerClient client in Clients)
         {
             client.isReady = false;
             SendMessages(Clients, new ReadyRequest(client.ID, false));
@@ -155,13 +155,13 @@ public class ServerListener : TcpListener, PacketHandler
 
     void HandleClients()
     {
-        for(int i = _clients.Count -1; i >= 0; i--) 
+        for (int i = _clients.Count - 1; i >= 0; i--)
         {
             ServerClient client = _clients[i];
             try
             {
                 if (client.client.Available == 0) continue;
-                
+
                 byte[] gottenBytes = StreamUtil.Read(client.client.GetStream());
                 Packet packet = new Packet(gottenBytes);
                 ISerializable current = packet.Read<ISerializable>();
@@ -173,7 +173,7 @@ public class ServerListener : TcpListener, PacketHandler
                     callbacks[storedType]?.Invoke(client, current, TrafficDirection.Received);
 
             }
-            catch(Exception e) { Debug.LogError(e); }
+            catch (Exception e) { Debug.LogError(e); }
         }
     }
 

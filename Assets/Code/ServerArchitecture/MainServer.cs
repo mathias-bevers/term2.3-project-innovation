@@ -125,6 +125,8 @@ public class MainServer : IRegistrable
     {
        server.SendPacket(serializable);
     }
+
+    public UserList GetUserList() => server.GenerateUserList();
 }
 
 

@@ -3,6 +3,12 @@
 public class UserList : ISerializable
 {
     public DeclareUser[] users;
+    public DeclareUser this[int index]
+    {
+        get => users[index];
+        set => users[index] = value;
+    }
+    public int Count => users.Length;
 
     public override void Deserialize(Packet pPacket)
     {
