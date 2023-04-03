@@ -17,6 +17,7 @@ namespace Code.Attributes.Editor
 		private float propertyHeight = 0.0f;
 		private string helpBoxMessage = string.Empty;
 
+		/*
 		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
 		private static void EnforceAttributes()
 		{
@@ -24,7 +25,6 @@ namespace Code.Attributes.Editor
 
 			StringBuilder stringBuilder = new();
 			Type[] assemblyTypes = Assembly.GetAssembly(typeof(ForceInitializationAttribute)).GetTypes();
-			stringBuilder.AppendLine($"Scanned {Assembly.GetExecutingAssembly().GetName()}");
 
 			List<FieldInfo> forcedFields = new();
 			foreach (Type type in assemblyTypes)
@@ -36,7 +36,7 @@ namespace Code.Attributes.Editor
 					{
 						continue;
 					}
-
+					 
 					forcedFields.Add(field);
 				}
 			}
@@ -44,6 +44,7 @@ namespace Code.Attributes.Editor
 			stringBuilder.AppendLine($"There are {forcedFields.Count} forced fields");
 			Debug.Log(stringBuilder.ToString());
 		}
+		*/
 
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
