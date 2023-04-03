@@ -25,6 +25,7 @@ public class LobbyHandler : BaseLobbyHandler
             freePoints.Add(i);
     }
 
+   
     [NetworkRegistry(typeof(DeclareUser), TrafficDirection.Received)]
     public void Receive(ServerClient client, DeclareUser user, TrafficDirection direction)
     {
@@ -43,6 +44,7 @@ public class LobbyHandler : BaseLobbyHandler
         lobbyPlayerCount = list.users.Length;
         bool lobbyAtMax = lobbyPlayerCount == Settings.maxPlayerCount;
         readyButton.gameObject.SetActive(lobbyAtMax);     
+        if(lobbyAtMax) SendMessage(new ReadyRequest(ID, true));
     }
     
     [NetworkRegistry(typeof(ReadyRequest), TrafficDirection.Received)]
@@ -51,7 +53,7 @@ public class LobbyHandler : BaseLobbyHandler
         foreach (LobbyCharacter chara in spawnedChars)
         {
             if (self.ID == chara.ID)
-                readyText.text = (chara.ready ? "Ready [✓]" : "Ready [X]");
+                readyText.text = (chara.ready ? "Ready [X]" : "Ready [✓]");
         }
     }
 

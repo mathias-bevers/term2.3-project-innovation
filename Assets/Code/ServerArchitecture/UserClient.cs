@@ -18,8 +18,6 @@ public class UserClient : IRegistrable
     UserData currentData;
     public UserData CurrentData { get => currentData; }
 
-
-
     void HandleReadPackets()
     {
         if (client == null) return;
@@ -61,6 +59,4 @@ public class UserClient : IRegistrable
     void OnDestroy() => SendPacket(new Disconnected());
     public override void Register(ClientReader reader) => this.reader += reader;
     public override void Unregister(ClientReader reader) => this.reader -= reader;
-
-
 }
