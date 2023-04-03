@@ -1,43 +1,39 @@
 using shared;
-using System.Collections;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Sockets;
-using Unity.VisualScripting;
 using UnityEngine;
+using static PacketHandler;
 
-public class MainServer : MonoBehaviour
+public class MainServer : IRegistrable
 {
     ServerListener server;
 
     ServerStates serverStates = ServerStates.Lobby;
 
-    void Awake()
+    public void Awake()
     {
-        server.Declare<Score>(HandleScore);
-        server.Declare<RequestNameChange>(HandleNameChange);
-        server.Declare<Disconnected>(HandleDisconnect);
-        server.Declare<ReadyRequest>(HandleReady);
+        DontDestroyOnLoad(this);
+        server.Declare<RequestNameChange>(new NetworkedCallback(HandleNameChange, TrafficDirection.Received));
+        server.Declare<Disconnected>(new NetworkedCallback(HandleDisconnect, TrafficDirection.Both));
+        server.Declare<ReadyRequest>(new NetworkedCallback(HandleReady, TrafficDirection.Received));
+        server.Declare<AskLoadingEntered>(new NetworkedCallback(HandleLoadingEntered, TrafficDirection.Send));
         StartServer();
     }
 
-    void HandleDisconnect(ServerClient client, ISerializable serializable)
+    void HandleDisconnect(ServerClient client, ISerializable serializable, TrafficDirection direction)
     {
         server.DisconnectClient(client);
     }
 
-    void HandleClient(ServerClient client, ISerializable serializable)
+    void HandleClient(ServerClient client, ISerializable serializable, TrafficDirection direction)
     {
-        Debug.Log("Other Packet: " + serializable.GetType());
+        
     }
 
-    void HandleScore(ServerClient client, ISerializable serializable)
+    void HandleLoadingEntered(ServerClient client, ISerializable serializable, TrafficDirection direction)
     {
-        Score score = (Score)serializable;
-        Debug.Log("Score: " + score.name + " : " + score.score);
+        AskLoadingEntered hasLoaded = (AskLoadingEntered)serializable;
     }
 
-    void HandleReady(ServerClient client, ISerializable readyRequest)
+    void HandleReady(ServerClient client, ISerializable readyRequest, TrafficDirection direction)
     {
         ReadyRequest ready = (ReadyRequest)readyRequest;
         foreach(ServerClient client2 in server.Clients)
@@ -46,7 +42,7 @@ public class MainServer : MonoBehaviour
         server.SendMessages(server.Clients, new ReadyRequest(client.ID, ready.Readied));
     }
 
-    void HandleNameChange(ServerClient client, ISerializable serializable)
+    void HandleNameChange(ServerClient client, ISerializable serializable, TrafficDirection direction)
     {
         RequestNameChange nameChange = (RequestNameChange)serializable;
         string name = nameChange.Name;
@@ -65,22 +61,42 @@ public class MainServer : MonoBehaviour
         server.Update();
 
         if (serverStates == ServerStates.Lobby) InLobby();
-        if (serverStates == ServerStates.Loading) Debug.Log("Handle Loading");
-
+        else if (serverStates == ServerStates.Loading) { }
     }
 
+    void DoSecondUpdate()
+    {
+        server.SecondUpdate();
+        if (serverStates == ServerStates.Lobby) { }
+        else if (serverStates == ServerStates.Loading) 
+        {
+            server.SendMessages(server.Clients, new AskLoadingEntered());
+        }
+    }
+
+    float counter = 0;
+
+    public override ClientReader reader { get => server.reader; set => server.reader = value; }
+    public override int ID => server.ID;
+
+    void DoFixedUpdate()
+    {
+        server.FixedUpdate();
+        counter += Time.fixedUnscaledDeltaTime;
+        if (counter >= 1)
+        {
+            counter = 0;
+            DoSecondUpdate();
+        }
+    }
 
     void InLobby()
     {
-        Debug.Log("Lobby gaming!");
         bool allReady = true;
         if (server.Clients.Count != Settings.maxPlayerCount) return;
         foreach (ServerClient client in server.Clients)
-        {
-            Debug.Log("Client: " + client.ID + ": " + client.isReady);
-            if (client.isReady == false)
+            if (!client.isReady)
                 allReady = false;
-        }
         if (!allReady) return;
 
         serverStates = ServerStates.Loading;
@@ -89,11 +105,26 @@ public class MainServer : MonoBehaviour
 
     public void StartServer() => server.Start();
     public void StopServer() => server.Stop();
-    public MainServer() => server = new ServerListener(Settings.ip, Settings.port, Settings.maxPlayerCount);
+    public MainServer() =>  server = new ServerListener(Settings.serverIP, Settings.port, Settings.maxPlayerCount);
     void OnEnable() =>      server.Register(HandleClient);
     void OnDisable() =>     server.Unregister(HandleClient);
     void Update() =>        DoUpdate();
-    void FixedUpdate() =>   server.FixedUpdate(); 
+    void FixedUpdate() =>   DoFixedUpdate();
+
+    public override void Register(PacketHandler.ClientReader reader)
+    {
+        server.Register(reader);
+    }
+
+    public override void Unregister(PacketHandler.ClientReader reader)
+    {
+        server.Unregister(reader);
+    }
+
+    public override void SendPacket(ISerializable serializable)
+    {
+       server.SendPacket(serializable);
+    }
 }
 
 

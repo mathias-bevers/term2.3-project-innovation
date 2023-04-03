@@ -1,24 +1,19 @@
 using shared;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.ConstrainedExecution;
 using UnityEngine;
 using static PacketHandler;
 
 public class ServerListener : TcpListener, PacketHandler
 {
-
     public ServerListener(IPAddress localaddr, int port, int maxPlayerCount) : base(localaddr, port) { this.maxPlayerCount = maxPlayerCount; }
 
     readonly int maxPlayerCount = 4;
     bool _isRunning = false;
 
     int currentServerCount = 0;
-
-    float counter = 0;
 
     public bool IsRunning { get { return _isRunning; } }
 
@@ -41,9 +36,11 @@ public class ServerListener : TcpListener, PacketHandler
         base.Stop();
     }
 
-    public Dictionary<Type, Action<ServerClient, ISerializable>> callbacks { get; set; } = new Dictionary<Type, Action<ServerClient, ISerializable>>();
+    public Dictionary<Type, NetworkedCallback> callbacks { get; set; } = new Dictionary<Type, NetworkedCallback>();
 
-    public void Declare<T>(Action<ServerClient, ISerializable> callback) where T : ISerializable
+    public int ID => -1;
+
+    public void Declare<T>(NetworkedCallback callback) where T : ISerializable
     {
         if (!callbacks.ContainsKey(typeof(T)))
             callbacks.Add(typeof(T), callback);
@@ -69,17 +66,17 @@ public class ServerListener : TcpListener, PacketHandler
 
     public void FixedUpdate()
     {
-        counter += Time.fixedUnscaledDeltaTime;
-        if (counter >= 1)
+       
+    }
+
+    public void SecondUpdate()
+    {
+        foreach (ServerClient client in Clients)
         {
-            foreach (ServerClient client in Clients)
-            {
-                if (client.missedHeartbeats >= 3) client.markAsDead = true;
-                else client.missedHeartbeats++;
-            }
-            SendMessages(Clients, new Heartbeat(50));
-            counter = 0;
+            if (client.missedHeartbeats >= 3) client.markAsDead = true;
+            else client.missedHeartbeats++;
         }
+        SendMessages(Clients, new Heartbeat(50));
     }
 
     void RidDeadClients()
@@ -137,10 +134,12 @@ public class ServerListener : TcpListener, PacketHandler
     {
         Packet sendPacket = Convert(message);
         byte[] packetBytes = sendPacket.GetBytes();
+        if (clients.Length == 0) reader?.Invoke(null, message, TrafficDirection.Send);
         foreach (ServerClient client in clients)
         {
             try
             {
+                reader?.Invoke(client, message, TrafficDirection.Send);
                 StreamUtil.Write(client.stream, packetBytes);
             }
             catch { }
@@ -169,9 +168,10 @@ public class ServerListener : TcpListener, PacketHandler
                 bool earlyCatch = EarlyCatch(client, current);
 
                 Type storedType = current.GetType();
+                if (!earlyCatch) reader?.Invoke(client, current, TrafficDirection.Received);
                 if (callbacks.ContainsKey(storedType))
-                    callbacks[storedType]?.Invoke(client, current);
-                else if (!earlyCatch) reader?.Invoke(client, current);
+                    callbacks[storedType]?.Invoke(client, current, TrafficDirection.Received);
+
             }
             catch(Exception e) { Debug.LogError(e); }
         }
@@ -187,5 +187,10 @@ public class ServerListener : TcpListener, PacketHandler
         }
 
         return false;
+    }
+
+    public void SendPacket(ISerializable serializable)
+    {
+        SendMessages(Clients, serializable);
     }
 }
