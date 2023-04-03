@@ -66,7 +66,7 @@ public class NetworkingBehaviour : MonoBehaviour
         }
     }
 
-    void BaseReceivePacket(ServerClient client, ISerializable serializable, TrafficDirection direction)
+    protected virtual void BaseReceivePacket(ServerClient client, ISerializable serializable, TrafficDirection direction)
     {
         //if (direction == TrafficDirection.Send ) return;
         ReceivePacket(client, serializable);

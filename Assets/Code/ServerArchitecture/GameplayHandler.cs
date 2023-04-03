@@ -13,7 +13,6 @@ public class GameplayHandler : NetworkingBehaviour
 
     public void Start()
     {
-        Debug.Log("Started!");
         SceneManager.SetActiveScene(SceneManager.GetSceneByName("GameplayScene"));
         Receive(FindObjectOfType<MainServer>().GetUserList());
     }
@@ -23,7 +22,6 @@ public class GameplayHandler : NetworkingBehaviour
         if (character == null) return;
         for (int i = 0; i < pointList.Count; i++)
         {
-            Debug.Log("Loop!");
             GameplayCharacter newCharacter = Instantiate(character);
             spawnedCharacters.Add(newCharacter);
             newCharacter.ID = list[i].ID;
