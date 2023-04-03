@@ -28,7 +28,6 @@ public class DamageZoneManager : MonoBehaviour
 	{
 		if (activeZones.Count >= maxZones) { return; }
 
-
 		float radius = Random.Range(radiusRange.x, radiusRange.y);
 		Vector3 position = Random.insideUnitSphere * 10;
 		position.y = 0;
@@ -46,6 +45,7 @@ public class DamageZoneManager : MonoBehaviour
 
 	private void OnZoneEnd(DamageZone zone)
 	{
+		// TODO: deal damage to players in the zone.
 		GameObject[] players = zone.GetPlayers();
 
 		activeZones.Remove(zone);
