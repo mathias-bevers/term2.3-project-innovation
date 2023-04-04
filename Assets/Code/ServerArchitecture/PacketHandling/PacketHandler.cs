@@ -30,5 +30,6 @@ public enum TrafficDirection
 public enum NetworkTarget
 {
     Client,
-    Server
+    Server,
+    FakeClient
 }

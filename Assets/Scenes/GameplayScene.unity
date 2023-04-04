@@ -504,6 +504,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1716214072}
   - component: {fileID: 1716214073}
+  - component: {fileID: 1716214074}
   m_Layer: 0
   m_Name: Gameplay
   m_TagString: Untagged
@@ -544,6 +545,19 @@ MonoBehaviour:
   character: {fileID: 7334401655443678786, guid: 0f3663af04ddf754ba19806eebe1a3f6, type: 3}
   pointList: {fileID: 1065744606}
   arenaMiddle: {fileID: 1087512967}
+--- !u!114 &1716214074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1716214071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57717dc31a353ec44a2c00f629656eea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  networkTarget: 2
 --- !u!1 &2098313892
 GameObject:
   m_ObjectHideFlags: 0

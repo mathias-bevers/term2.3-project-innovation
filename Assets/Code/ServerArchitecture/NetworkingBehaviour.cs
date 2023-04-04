@@ -24,6 +24,7 @@ public class NetworkingBehaviour : MonoBehaviour
         {
             if (networkTarget == NetworkTarget.Client) overrideClient = FindObjectOfType<UserClient>();
             else if (networkTarget == NetworkTarget.Server) overrideClient = FindObjectOfType<MainServer>();
+            else if (networkTarget == NetworkTarget.FakeClient) overrideClient = FindObjectOfType<FakeClient>();
         }
 
         if(overrideClient == null)

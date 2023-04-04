@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using static PacketHandler;
 
@@ -165,16 +166,30 @@ public class ServerListener : TcpListener, PacketHandler
                 byte[] gottenBytes = StreamUtil.Read(client.client.GetStream());
                 Packet packet = new Packet(gottenBytes);
                 ISerializable current = packet.Read<ISerializable>();
-                bool earlyCatch = EarlyCatch(client, current);
-
-                Type storedType = current.GetType();
-                if (!earlyCatch) reader?.Invoke(client, current, TrafficDirection.Received);
-                if (callbacks.ContainsKey(storedType))
-                    callbacks[storedType]?.Invoke(client, current, TrafficDirection.Received);
+                ReceivedPacket(client, current);
 
             }
             catch (Exception e) { Debug.LogError(e); }
         }
+    }
+
+    public ServerClient GetClientByID(int id)
+    {
+       foreach(ServerClient client in _clients)
+        {
+            if (client.ID == id) return client;
+        }
+        return null;
+    }
+
+    public void ReceivedPacket(ServerClient client, ISerializable current)
+    {
+        bool earlyCatch = EarlyCatch(client, current);
+
+        Type storedType = current.GetType();
+        if (!earlyCatch) reader?.Invoke(client, current, TrafficDirection.Received);
+        if (callbacks.ContainsKey(storedType))
+            callbacks[storedType]?.Invoke(client, current, TrafficDirection.Received);
     }
 
     bool EarlyCatch(ServerClient client, ISerializable serializable)

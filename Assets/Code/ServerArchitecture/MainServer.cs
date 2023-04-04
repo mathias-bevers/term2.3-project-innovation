@@ -8,6 +8,8 @@ public class MainServer : IRegistrable
 {
     ServerListener server;
 
+    public ServerListener Server { get => server; }
+
     ServerStates serverStates = ServerStates.Lobby;
 
     public void Awake()

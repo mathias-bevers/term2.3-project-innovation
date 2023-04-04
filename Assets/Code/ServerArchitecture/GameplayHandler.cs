@@ -29,4 +29,23 @@ public class GameplayHandler : NetworkingBehaviour
             newCharacter.transform.LookAt(arenaMiddle.transform);
         }
     }
+
+#if DEBUG
+    int currentSelected = -1;
+
+    public void OnGUI()
+    {
+        GUIUtility.ScaleAroundPivot(new Vector2(3, 3), Vector2.zero);
+        GUI.Box(new Rect(10, 10, 30, 30), currentSelected.ToString());
+        for(int i = 0; i < Settings.maxPlayerCount; i++)
+        {
+            if(GUI.Button(new Rect(10, 42 + (i * 32), 30, 30), new GUIContent(i.ToString(), "Select client number: " + i.ToString())))
+            {
+                if (i == currentSelected) currentSelected = -1;
+                else currentSelected = i;
+                FindObjectOfType<FakeClient>()?.SetID(currentSelected);
+            }
+        }
+    }
+#endif
 }
