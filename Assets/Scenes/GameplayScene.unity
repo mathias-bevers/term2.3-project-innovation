@@ -541,7 +541,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   networkTarget: 1
-  character: {fileID: 4230746765278854589, guid: bc23c5d11795c264da6a705fceb9631b, type: 3}
+  character: {fileID: 2127898787544221291, guid: 0f3663af04ddf754ba19806eebe1a3f6, type: 3}
   pointList: {fileID: 1065744606}
   arenaMiddle: {fileID: 1087512967}
 --- !u!1 &2098313892

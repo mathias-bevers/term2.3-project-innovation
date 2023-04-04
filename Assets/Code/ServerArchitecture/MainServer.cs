@@ -1,5 +1,7 @@
 using shared;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static PacketHandler;
 
 public class MainServer : IRegistrable
@@ -18,9 +20,23 @@ public class MainServer : IRegistrable
         StartServer();
     }
 
+    bool hasQuit = false;
+
     void HandleDisconnect(ServerClient client, ISerializable serializable, TrafficDirection direction)
     {
-        server.DisconnectClient(client);
+        if(serverStates == ServerStates.Lobby) server.DisconnectClient(client);
+        else
+        {
+            foreach(ServerClient c in server.Clients)
+            {
+                SendPacket(new Disconnected(c.ID));
+            }
+            if (hasQuit) return;
+            hasQuit = true;
+            server.Stop();
+            Destroy(gameObject);
+            SceneManager.LoadScene("Lobby");
+        }
     }
 
     void HandleClient(ServerClient client, ISerializable serializable, TrafficDirection direction)

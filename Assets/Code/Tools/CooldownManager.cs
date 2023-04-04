@@ -16,9 +16,11 @@ public static class CooldownManager
     private static Dictionary<string,Coroutine> coroutines = new Dictionary<string, Coroutine>();
 
     //TO SUPPORT DOMAIN RELOADING WHEN DISABLED
-    [RuntimeInitializeOnLoadMethod]
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void Init()
     {
+        Debug.Log("Setting up cooldownManager");
+
         GameObject obj = new GameObject("Cooldown Manager");
         obj.hideFlags = HideFlags.HideInHierarchy;
         UnityEngine.Object.DontDestroyOnLoad(obj);

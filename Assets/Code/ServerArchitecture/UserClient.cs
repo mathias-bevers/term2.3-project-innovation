@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Net;
 using UnityEngine;
 using static PacketHandler;
+using UnityEngine.SceneManagement;
 
 public class UserClient : IRegistrable
 {
@@ -18,9 +19,20 @@ public class UserClient : IRegistrable
     UserData currentData;
     public UserData CurrentData { get => currentData; }
 
+    float timerWithoutHeartbeat = 0;
+    int penaltyCount = 0;
+
     void HandleReadPackets()
     {
         if (client == null) return;
+        timerWithoutHeartbeat += Time.deltaTime;
+        if(timerWithoutHeartbeat >= 3.5f || penaltyCount >= 5)
+        {
+            SendPacket(new Disconnected());
+            SceneManager.LoadScene("IPScene");
+            Destroy(this);
+            return;
+        }
         if (client.Available == 0) return;
 
         byte[] gottenBytes = StreamUtil.Read(client.stream);
@@ -33,7 +45,7 @@ public class UserClient : IRegistrable
     void ReceivePacket(ServerClient client, ISerializable serializable, TrafficDirection trafficDirection)
     {
         if (trafficDirection != TrafficDirection.Received) return;
-        if (serializable is Heartbeat) SendPacket(serializable);
+        if (serializable is Heartbeat) { timerWithoutHeartbeat = 0; SendPacket(serializable); }
         if (serializable is DeclareUser) 
         { 
             DeclareUser du = (DeclareUser)serializable; 
@@ -48,7 +60,7 @@ public class UserClient : IRegistrable
         try {
             reader?.Invoke(client, serializable, TrafficDirection.Send);
             StreamUtil.Write(client.stream, packet.GetBytes());
-        } catch(Exception e) { Debug.LogError(e); }
+        } catch(Exception e) { Debug.LogError(e); penaltyCount++; }
     }
 
     void Awake() => DontDestroyOnLoad(this);

@@ -1,13 +1,14 @@
 using UnityEngine;
 
 [RequireComponent(typeof(SphereCollider))]
+[RequireComponent(typeof(Rigidbody))]
 public class BallMovement : MonoBehaviour
 {
-	[SerializeField] private bool blockPlayerInput;
 	[SerializeField] private bool isPlayerControlled;
 	[SerializeField] private float maxSpeed = 100.0f;
 	[SerializeField] private float speed = 5.0f;
 
+	private bool blockPlayerInput;
 	private new Rigidbody rigidbody;
 	private new SphereCollider collider;
 	private Transform cachedTransform;
@@ -26,10 +27,12 @@ public class BallMovement : MonoBehaviour
 
 		if (blockPlayerInput) { return; }
 
-		input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-	}
 
-	private void FixedUpdate() { Move(input); }
+		input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
+        rigidbody.position = new Vector3(rigidbody.position.x, 0.5f, rigidbody.position.z); Move(input);
+    }
+
+	//private void FixedUpdate() { rigidbody.position = new Vector3(rigidbody.position.x, 0.5f, rigidbody.position.z); Move(input); }
 
 	private void Move(Vector3 input)
 	{
@@ -40,8 +43,8 @@ public class BallMovement : MonoBehaviour
 		}
 
 		input.Normalize();
-		input *= speed;
-		rigidbody.AddForce(input);
+		input *= speed * Time.deltaTime;
+		rigidbody.AddForce(input, ForceMode.Impulse);
 
 		if (rigidbody.velocity.magnitude <= maxSpeed) { return; }
 
@@ -51,15 +54,22 @@ public class BallMovement : MonoBehaviour
 		rigidbody.velocity = newVelocity;
 	}
 
-	private void OnCollisionEnter(Collision collision)
+	private void OnCollisionStay(Collision collision)
 	{
+		//if (blockPlayerInput) return;
 		// This is an other player.
-		if (collision.collider.GetComponent<BallMovement>() == null) { return; }
+		BallMovement ballmovement;
 
-		rigidbody.AddExplosionForce(25f, collision.contacts[0].point, 0.5f, 1, ForceMode.Impulse);
+        if ((ballmovement = collision.collider.GetComponent<BallMovement>()) == null) { return; }
+		input = Vector3.zero;
+		rigidbody.velocity = Vector3.zero;
+		Vector3 newPos = ballmovement.transform.position;
+		newPos.y = transform.position.y;
+        rigidbody.AddExplosionForce(100f, newPos, 0.5f, 1, ForceMode.VelocityChange);
+
 		blockPlayerInput = true;
 
-		CooldownManager.Cooldown(1.5f, () => blockPlayerInput = false);
+		CooldownManager.Cooldown(0.5f, () => blockPlayerInput = false);
 	}
 
 	private void OnGUI() { GUI.Label(new Rect(0, 0, 250, 25), $"Velocity: {rigidbody.velocity.magnitude}"); }
