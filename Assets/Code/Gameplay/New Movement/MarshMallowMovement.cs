@@ -1,36 +1,45 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(CapsuleCollider))]
 [RequireComponent(typeof(Rigidbody))]
-public class MarshMallowMovement : MonoBehaviour
+public class MarshMallowMovement : IDedNetworkingBehaviour
 {
-    [SerializeField] bool controlledByPlayer;
     [SerializeField] float maxSpeed = 100;
     [SerializeField] float speed = 8;
+    [SerializeField] float blockTime = 0.8f;
 
-
+    float blockTimer = 0;
     bool blockInput = false;
     private new Rigidbody rigidbody;
-    private new CapsuleCollider collider;
-    private Transform cachedTransform;
     private Vector2 input;
 
-
-    private void Awake()
+    internal override void Awoken()
     {
-        collider = GetComponent<CapsuleCollider>();
         rigidbody = GetComponent<Rigidbody>();
-        cachedTransform = transform;
     }
 
-    
+
+    [NetworkRegistry(typeof(InputPacket), TrafficDirection.Received)]
+    public void Receive(ServerClient client, InputPacket packet, TrafficDirection direction)
+    {
+        if (blockInput) return;
+        SerializableVector2 input = packet.input;
+        this.input = new Vector2(input.x, input.y);
+    }
+
+    [NetworkRegistry(typeof(RequestRespawn), TrafficDirection.Received)]
+    public void Receive(ServerClient client, RequestRespawn packet, TrafficDirection direction)
+    {
+        transform.position = new Vector3(0, 1, 0);
+    }
+
     void Update()
     {
-        if (!controlledByPlayer) return;
-        if (blockInput)  return; 
-        input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        blockTimer -= Time.deltaTime;
+        if (blockTimer <= 0) blockInput = false;
     }
 
     private void FixedUpdate()
@@ -69,5 +78,6 @@ public class MarshMallowMovement : MonoBehaviour
         newPos.y = transform.position.y;
         rigidbody.AddExplosionForce(10f, newPos, 2, 0, ForceMode.VelocityChange);
         blockInput = true;
+        blockTimer = blockTime;
     }
 }

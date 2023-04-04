@@ -5,11 +5,11 @@ using UnityEngine.SceneManagement;
 
 public class GameplayHandler : NetworkingBehaviour
 {
-    [SerializeField] GameplayCharacter character;
+    [SerializeField] MarshMallowMovement character;
     [SerializeField] PointList pointList;
     [SerializeField] Transform arenaMiddle;
 
-    List<GameplayCharacter> spawnedCharacters = new List<GameplayCharacter>();
+    List<MarshMallowMovement> spawnedCharacters = new List<MarshMallowMovement>();
 
     public void Start()
     {
@@ -22,7 +22,7 @@ public class GameplayHandler : NetworkingBehaviour
         if (character == null) return;
         for (int i = 0; i < pointList.Count; i++)
         {
-            GameplayCharacter newCharacter = Instantiate(character);
+            MarshMallowMovement newCharacter = Instantiate(character);
             spawnedCharacters.Add(newCharacter);
             newCharacter.ID = list[i].ID;
             newCharacter.transform.position = pointList[i].position;

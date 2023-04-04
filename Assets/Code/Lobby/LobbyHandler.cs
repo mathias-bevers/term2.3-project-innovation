@@ -36,6 +36,9 @@ public class LobbyHandler : BaseLobbyHandler
         }
         inputField.SetTextWithoutNotify(self.Name);
         userCanvas?.SetActive(true);
+
+        if (Settings.preferName != string.Empty)
+            SendMessage(new RequestNameChange(-1, Settings.preferName));
     }
     
     [NetworkRegistry(typeof(UserList), TrafficDirection.Received)]
@@ -43,8 +46,10 @@ public class LobbyHandler : BaseLobbyHandler
     {
         lobbyPlayerCount = list.users.Length;
         bool lobbyAtMax = lobbyPlayerCount == Settings.maxPlayerCount;
-        readyButton.gameObject.SetActive(lobbyAtMax);     
-        if(lobbyAtMax) SendMessage(new ReadyRequest(ID, true));
+        readyButton.gameObject.SetActive(lobbyAtMax);
+#if DEBUG
+        if (lobbyAtMax) SendMessage(new ReadyRequest(ID, true));
+#endif
     }
     
     [NetworkRegistry(typeof(ReadyRequest), TrafficDirection.Received)]

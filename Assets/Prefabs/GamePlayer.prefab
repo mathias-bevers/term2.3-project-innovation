@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 2127898786447013846}
   - component: {fileID: 2127898786447013843}
   - component: {fileID: 2127898786447013840}
-  - component: {fileID: 2127898786447013841}
   m_Layer: 0
   m_Name: Capsule
   m_TagString: Untagged
@@ -84,20 +83,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &2127898786447013841
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2127898786447013847}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2127898787544221289
 GameObject:
   m_ObjectHideFlags: 0
@@ -107,7 +92,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2127898787544221288}
-  - component: {fileID: 2127898787544221291}
+  - component: {fileID: 6921279897095604297}
+  - component: {fileID: 6255324709749385094}
+  - component: {fileID: 7334401655443678786}
   m_Layer: 0
   m_Name: GamePlayer
   m_TagString: Untagged
@@ -131,7 +118,37 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2127898787544221291
+--- !u!136 &6921279897095604297
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2127898787544221289}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
+--- !u!54 &6255324709749385094
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2127898787544221289}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 1
+  m_Constraints: 112
+  m_CollisionDetection: 3
+--- !u!114 &7334401655443678786
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -140,8 +157,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2127898787544221289}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 65fe98a0c25bc3c449f87ff900a4a2a0, type: 3}
+  m_Script: {fileID: 11500000, guid: 4536be21d096be94297a4be3f7bdcb60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   networkTarget: 1
   allowedID: 0
+  maxSpeed: 40
+  speed: 20
+  blockTime: 0.8

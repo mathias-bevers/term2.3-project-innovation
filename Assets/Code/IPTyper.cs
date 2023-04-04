@@ -11,6 +11,8 @@ public class IPTyper : MonoBehaviour
     [SerializeField] InputField ipField;
     [SerializeField] InputField portField;
 
+    float retry = 0;
+
     private void Start()
     {
         ipField.text = Settings.ip.ToString();
@@ -18,6 +20,23 @@ public class IPTyper : MonoBehaviour
     }
 
     public string sceneName = "SampleScene";
+
+    private void Update()
+    {
+        retry += Time.deltaTime;
+        if(retry > 3.5f)
+        {
+            retry = 0;
+#if DEBUG
+            Connect();
+#endif
+        }
+    }
+
+    public void OnName(string name)
+    {
+        Settings.preferName = name;
+    }
 
     public void OnIP(string ip)
     {
@@ -27,6 +46,11 @@ public class IPTyper : MonoBehaviour
     public void OnPort(string port)
     {
         int.TryParse(port, out Settings.port);
+    }
+
+    public void ResetTimer()
+    {
+        retry = 0;
     }
 
     public void Connect()
