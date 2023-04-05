@@ -55,8 +55,9 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
             return;
         }
 
-        if(input.magnitude > 1) input.Normalize();
-        Vector3 newInput = new Vector3(input.x, 0, input.y);
+        Vector2 actInput = input;
+        if(actInput.magnitude > 1) actInput.Normalize();
+        Vector3 newInput = new Vector3(actInput.x, 0, actInput.y);
         newInput *= speed * Time.fixedDeltaTime;
         rigidbody.AddForce(newInput, ForceMode.Impulse);
 
