@@ -113,8 +113,14 @@ public class ServerListener : TcpListener, PacketHandler
     {
         UserList list = new UserList();
         List<DeclareUser> users = new List<DeclareUser>();
+        int c = 0;
         foreach (ServerClient client in _clients)
-            users.Add(client.self);
+        {
+            DeclareUser user = client.self;
+            user.Colour = (ColourType)c;
+            users.Add(user);
+            c++;
+        }
         list.users = users.ToArray();
         return list;
     }

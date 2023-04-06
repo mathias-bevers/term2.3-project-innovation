@@ -10,6 +10,9 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
     [SerializeField] float maxSpeed = 100;
     [SerializeField] float speed = 8;
     [SerializeField] float blockTime = 0.8f;
+    [SerializeField] MeshRenderer indicator;
+
+    [SerializeField] List<ColourMaterial> colours = new List<ColourMaterial>();
 
     float blockTimer = 0;
     bool blockInput = false;
@@ -34,6 +37,15 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
     public void Receive(ServerClient client, RequestRespawn packet, TrafficDirection direction)
     {
         transform.position = new Vector3(0, 1, 0);
+    }
+
+    public void SetColour(ColourType type)
+    {
+        foreach(var colour in colours)
+        {
+            if (colour.colourType != type) continue;
+            indicator.material = colour.colourMaterial;
+        }
     }
 
     void Update()

@@ -145,6 +145,18 @@ public class MainServer : IRegistrable
     }
 
     public UserList GetUserList() => server.GenerateUserList();
+
+#if UNITY_EDITOR
+    private void OnGUI()
+    {
+        EditorGUIUtility.ScaleAroundPivot(new Vector2(3, 3), Vector2.zero);
+        for(int i = server.Clients.Count - 1; i >= 0; i--)
+        {
+            var client = server.Clients[i];
+            GUI.Box(new Rect(0, 300 + (i * 52), 200, 50), client.ID.ToString());
+        }
+    }
+#endif
 }
 
 

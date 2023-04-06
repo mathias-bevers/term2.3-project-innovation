@@ -49,7 +49,8 @@ public class UserClient : IRegistrable
         if (serializable is DeclareUser) 
         { 
             DeclareUser du = (DeclareUser)serializable; 
-            currentData = new UserData(du.ID, du.Name, du.Colour); 
+            currentData = new UserData(du.ID, du.Name, du.Colour);
+            client.ID = du.ID;
         }
     }
 

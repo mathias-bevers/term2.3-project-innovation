@@ -9,9 +9,12 @@ public class ClientController : NetworkingBehaviour
 
     float timer = 0;
     readonly float delay = 1.0f / Settings.ticksPerSecond;
+
+    bool dead = false;
     
     public void Update()
     {
+        if (dead) return;
         inputCount++;
         lastInputs += new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 

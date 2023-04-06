@@ -8,25 +8,57 @@ public class GameplayHandler : NetworkingBehaviour
     [SerializeField] MarshMallowMovement character;
     [SerializeField] PointList pointList;
     [SerializeField] Transform arenaMiddle;
+    [SerializeField] CameraMover cameraMover;
 
     List<MarshMallowMovement> spawnedCharacters = new List<MarshMallowMovement>();
+
+
+
+    float timer = 0;
+    bool hasSpawned = false;
 
     public void Start()
     {
         SceneManager.SetActiveScene(SceneManager.GetSceneByName("GameplayScene"));
-        Receive(FindObjectOfType<MainServer>().GetUserList());
     }
 
-    public void Receive(UserList list)
+
+
+    [NetworkRegistry(typeof(UserList), TrafficDirection.Send)]
+    public void Receive(ServerClient client, UserList list,TrafficDirection direction)
     {
+        if (hasSpawned) return;
+        if (list.Count != Settings.maxPlayerCount) return;
         if (character == null) return;
-        for (int i = 0; i < pointList.Count; i++)
+        for (int i = 0; i < list.Count; i++)
         {
             MarshMallowMovement newCharacter = Instantiate(character);
-            spawnedCharacters.Add(newCharacter);
             newCharacter.ID = list[i].ID;
+            Debug.Log(newCharacter.ID);
+            newCharacter.SetColour(list[i].Colour);
             newCharacter.transform.position = pointList[i].position;
             newCharacter.transform.LookAt(arenaMiddle.transform);
+            spawnedCharacters.Add(newCharacter);
+        }
+        hasSpawned = true;
+        cameraMover?.Register(spawnedCharacters);
+    }
+
+    private void Update()
+    {
+        timer += Time.deltaTime;
+        if(!hasSpawned && timer >= 3)
+        {
+            SendMessage(FindObjectOfType<MainServer>().GetUserList());
+        }
+        for(int i = spawnedCharacters.Count - 1; i >= 0; i--)
+        {
+            if (spawnedCharacters[i].transform.position.y <= -1) 
+            {
+                SendMessage(new DeathEvent(spawnedCharacters[i].allowedID, DeathType.Dirty));
+                Destroy(spawnedCharacters[i].gameObject);
+                spawnedCharacters.RemoveAt(i);
+            }
         }
     }
 

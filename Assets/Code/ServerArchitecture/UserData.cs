@@ -4,14 +4,14 @@ public struct UserData
 {
     public int ID;
     public string Name;
-    public Vector3 colour;
+    public ColourType colour;
     public bool ready;
 
     public UserData(int id) 
     { 
         ID = id; 
         Name = string.Empty; 
-        colour = Vector3.one;
+        colour = ColourType.Green;
         ready = false;
     }
 
@@ -19,11 +19,11 @@ public struct UserData
     {
         ID = id;
         Name = name;
-        colour = Vector3.one;
+        colour = ColourType.Green;
         ready = false;
     }
 
-    public UserData(int id, string name, Vector3 colour)
+    public UserData(int id, string name, ColourType colour)
     {
         ID = id;
         Name = name;

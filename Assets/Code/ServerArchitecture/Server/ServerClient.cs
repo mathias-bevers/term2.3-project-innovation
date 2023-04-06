@@ -28,7 +28,7 @@ public class ServerClient
     {
         _client = client;
         _id = id;
-        self = new DeclareUser(id, "Guest" + id.ToString(), UnityEngine.Vector3.one);
+        self = new DeclareUser(id, "Guest" + id.ToString(), ColourType.Blue);
     }
 
     public static implicit operator TcpClient(ServerClient client) => client.client;
