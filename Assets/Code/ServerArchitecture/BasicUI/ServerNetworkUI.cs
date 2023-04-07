@@ -16,4 +16,11 @@ public class ServerNetworkUI : BaseNetworkedUI
         base.OnUserList(e);
     }
 
+    [NetworkRegistry(typeof(BakingPacket), TrafficDirection.Send)]
+    public void Receive(ServerClient client, BakingPacket e, TrafficDirection direction)
+    {
+        Debug.Log("Got baking packet!");
+        base.ReceiveBakingPacket(e);
+    }
+
 }

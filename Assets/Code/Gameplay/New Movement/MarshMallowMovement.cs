@@ -14,6 +14,8 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
 
     [SerializeField] List<ColourMaterial> colours = new List<ColourMaterial>();
 
+    public float currentBurnedCounter = 0;
+
     float blockTimer = 0;
     bool blockInput = false;
     private new Rigidbody rigidbody;

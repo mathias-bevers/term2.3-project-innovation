@@ -959,6 +959,7 @@ GameObject:
   - component: {fileID: 1716214072}
   - component: {fileID: 1716214073}
   - component: {fileID: 1716214074}
+  - component: {fileID: 1716214075}
   m_Layer: 0
   m_Name: Gameplay
   m_TagString: Untagged
@@ -1001,6 +1002,7 @@ MonoBehaviour:
   pointList: {fileID: 1065744606}
   arenaMiddle: {fileID: 1087512967}
   cameraMover: {fileID: 1229961869}
+  bakingZone: {fileID: 1716214075}
 --- !u!114 &1716214074
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1014,6 +1016,51 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   networkTarget: 2
+--- !u!114 &1716214075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1716214071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d65b6bb0f2c16a643a3ae3ce6b385129, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  zones:
+  - size: 3
+    deadlyZone: 1
+    damageMultiplier: 0
+    debugColor: {r: 1, g: 0, b: 0.020231247, a: 1}
+  - size: 1.5
+    deadlyZone: 0
+    damageMultiplier: 7
+    debugColor: {r: 1, g: 0.9712733, b: 0, a: 1}
+  - size: 1
+    deadlyZone: 0
+    damageMultiplier: 5
+    debugColor: {r: 1, g: 0.22591278, b: 0, a: 1}
+  - size: 1
+    deadlyZone: 0
+    damageMultiplier: 3
+    debugColor: {r: 1, g: 0.4204126, b: 0, a: 1}
+  - size: 1
+    deadlyZone: 0
+    damageMultiplier: 2
+    debugColor: {r: 1, g: 0.7288381, b: 0, a: 1}
+  - size: 1
+    deadlyZone: 0
+    damageMultiplier: 1
+    debugColor: {r: 1, g: 0.7288381, b: 0, a: 1}
+  - size: 0.5
+    deadlyZone: 0
+    damageMultiplier: 0
+    debugColor: {r: 1, g: 0.7288381, b: 0, a: 1}
+  - size: 3
+    deadlyZone: 1
+    damageMultiplier: 0
+    debugColor: {r: 1, g: 0, b: 0.47115803, a: 1}
 --- !u!1001 &2567662448746321553
 PrefabInstance:
   m_ObjectHideFlags: 0

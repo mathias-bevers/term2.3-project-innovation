@@ -21,4 +21,9 @@ public class BaseNetworkedUI : NetworkingBehaviour
     {
         canvas.SetDeathEvent(e);
     }
+
+    internal void ReceiveBakingPacket(BakingPacket packet)
+    {
+        canvas.SetBar(packet);
+    }
 }

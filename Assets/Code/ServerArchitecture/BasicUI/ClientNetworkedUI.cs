@@ -15,4 +15,10 @@ public class ClientNetworkedUI : BaseNetworkedUI
     {
         base.OnUserList(e);
     }
+
+    [NetworkRegistry(typeof(BakingPacket), TrafficDirection.Received)]
+    public void Receive(ServerClient client, BakingPacket e, TrafficDirection direction)
+    {
+        base.ReceiveBakingPacket(e);
+    }
 }

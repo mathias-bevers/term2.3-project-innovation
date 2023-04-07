@@ -15,4 +15,6 @@ public static class Settings
     public const int maxPlayerCount = 4;
     public const float ticksPerSecond = 20;
 
+
+    public const float bakingMax = 500;
 }

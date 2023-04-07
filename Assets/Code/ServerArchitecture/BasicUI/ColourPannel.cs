@@ -14,6 +14,8 @@ public class ColourPannel : MonoBehaviour
     [SerializeField] Text usernameText;
     [SerializeField] Text stateText;
 
+    [SerializeField] Gradient colourGradient = new Gradient();
+    [SerializeField] Image bar;
 
     [SerializeField] List<ColourVector> colours = new List<ColourVector>();
     [SerializeField] List<DeathToText> deathToTexts = new List<DeathToText>();
@@ -45,6 +47,12 @@ public class ColourPannel : MonoBehaviour
             if (item.type != type) continue;
             stateText.text = item.Text;
         }
+    }
+
+    public void SetBar(float current, float max)
+    {
+        bar.fillAmount = current / max;
+        bar.color = colourGradient.Evaluate(bar.fillAmount);
     }
 }
 

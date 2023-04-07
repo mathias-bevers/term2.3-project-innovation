@@ -25,4 +25,18 @@ public class CharacterUICanvas : MonoBehaviour
                 colourPannel.SetDeathEvent(e.deathType);
         }
     }
+
+
+    public void SetBar(BakingPacket packet)
+    {
+        foreach (BakingPacketData bakingPacket in packet.bakingPackets)
+        {
+            foreach (ColourPannel colourPannel in colourPannel)
+            {
+                if (colourPannel.ID != bakingPacket.ID) continue;
+                colourPannel.SetBar(bakingPacket.actualAmount, packet.maxBake);
+                break;
+            }
+        }
+    }
 }

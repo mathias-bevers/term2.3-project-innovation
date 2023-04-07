@@ -582,6 +582,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ClientCharacterUI
       objectReference: {fileID: 0}
+    - target: {fileID: 8990110349653337283, guid: f5a6c87d0e6b2c1479591f0c4e718f99, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.44504547
+      objectReference: {fileID: 0}
     - target: {fileID: 8990110350554517781, guid: f5a6c87d0e6b2c1479591f0c4e718f99, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -774,7 +778,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0, g: 0.38888884, b: 1, a: 0}
+  m_BackGroundColor: {r: 0.21698111, g: 0.21698111, b: 0.21698111, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
