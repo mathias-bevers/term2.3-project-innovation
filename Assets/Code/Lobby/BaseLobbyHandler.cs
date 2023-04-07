@@ -77,13 +77,19 @@ public class BaseLobbyHandler : NetworkingBehaviour
 
     internal void SpawnCharacter(DeclareUser user)
     {
-        if (HasSpawned(user)) return;
+        if (HasSpawned(user)) {
+            foreach(LobbyCharacter chara in spawnedChars)
+                if(chara.ID == user.ID)
+                    chara.SetColour(user.Colour);
+            return;
+        }
 
         LobbyCharacter character = Instantiate(lobbyCharacterPrefab);
         spawnedChars.Add(character);
         character.transform.parent = transform;
         character.SetID(user.ID);
         character.SetName(user.Name);
+        character.SetColour(user.Colour);
         if (user.ID == self.ID)
         {
             character.assignedNum = spawnPoints.Length - 1;

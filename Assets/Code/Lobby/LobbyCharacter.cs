@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class LobbyCharacter : MonoBehaviour
@@ -14,6 +15,9 @@ public class LobbyCharacter : MonoBehaviour
 
     [SerializeField] Text nameText;
     [SerializeField] Text idText;
+    [SerializeField] MeshRenderer background;
+
+    [SerializeField] List<ColourMaterial> colours = new List<ColourMaterial>();
 
 
     public void SetID(int id)
@@ -26,6 +30,15 @@ public class LobbyCharacter : MonoBehaviour
     {
         this.ready = ready;
         idText.text = ready ? "✓" : "X";
+    }
+
+    public void SetColour(ColourType type)
+    {
+        foreach(ColourMaterial c in colours)
+        {
+            if (c.colourType != type) continue;
+            background.material = c.colourMaterial;
+        }
     }
 
     public void SetName(string name)

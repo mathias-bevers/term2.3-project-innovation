@@ -66,7 +66,7 @@ public class ServerListener : TcpListener, PacketHandler
 
     public void FixedUpdate()
     {
-       
+
     }
 
     public void SecondUpdate()
@@ -109,19 +109,25 @@ public class ServerListener : TcpListener, PacketHandler
         OnPlayerCountChange();
     }
 
-   UserList GenerateUserList()
+    public UserList GenerateUserList()
     {
         UserList list = new UserList();
         List<DeclareUser> users = new List<DeclareUser>();
+        int c = 0;
         foreach (ServerClient client in _clients)
-            users.Add(client.self);
+        {
+            DeclareUser user = client.self;
+            user.Colour = (ColourType)c;
+            users.Add(user);
+            c++;
+        }
         list.users = users.ToArray();
         return list;
     }
 
     void OnPlayerCountChange()
     {
-        foreach(ServerClient client in Clients)
+        foreach (ServerClient client in Clients)
         {
             client.isReady = false;
             SendMessages(Clients, new ReadyRequest(client.ID, false));
@@ -155,26 +161,40 @@ public class ServerListener : TcpListener, PacketHandler
 
     void HandleClients()
     {
-        for(int i = _clients.Count -1; i >= 0; i--) 
+        for (int i = _clients.Count - 1; i >= 0; i--)
         {
             ServerClient client = _clients[i];
             try
             {
                 if (client.client.Available == 0) continue;
-                
+
                 byte[] gottenBytes = StreamUtil.Read(client.client.GetStream());
                 Packet packet = new Packet(gottenBytes);
                 ISerializable current = packet.Read<ISerializable>();
-                bool earlyCatch = EarlyCatch(client, current);
-
-                Type storedType = current.GetType();
-                if (!earlyCatch) reader?.Invoke(client, current, TrafficDirection.Received);
-                if (callbacks.ContainsKey(storedType))
-                    callbacks[storedType]?.Invoke(client, current, TrafficDirection.Received);
+                ReceivedPacket(client, current);
 
             }
-            catch(Exception e) { Debug.LogError(e); }
+            catch (Exception e) { Debug.LogError(e); }
         }
+    }
+
+    public ServerClient GetClientByID(int id)
+    {
+       foreach(ServerClient client in _clients)
+        {
+            if (client.ID == id) return client;
+        }
+        return null;
+    }
+
+    public void ReceivedPacket(ServerClient client, ISerializable current)
+    {
+        bool earlyCatch = EarlyCatch(client, current);
+
+        Type storedType = current.GetType();
+        if (!earlyCatch) reader?.Invoke(client, current, TrafficDirection.Received);
+        if (callbacks.ContainsKey(storedType))
+            callbacks[storedType]?.Invoke(client, current, TrafficDirection.Received);
     }
 
     bool EarlyCatch(ServerClient client, ISerializable serializable)

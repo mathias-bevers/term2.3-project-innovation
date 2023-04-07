@@ -24,6 +24,7 @@ public class NetworkingBehaviour : MonoBehaviour
         {
             if (networkTarget == NetworkTarget.Client) overrideClient = FindObjectOfType<UserClient>();
             else if (networkTarget == NetworkTarget.Server) overrideClient = FindObjectOfType<MainServer>();
+            else if (networkTarget == NetworkTarget.FakeClient) overrideClient = FindObjectOfType<FakeClient>();
         }
 
         if(overrideClient == null)
@@ -66,7 +67,7 @@ public class NetworkingBehaviour : MonoBehaviour
         }
     }
 
-    void BaseReceivePacket(ServerClient client, ISerializable serializable, TrafficDirection direction)
+    protected virtual void BaseReceivePacket(ServerClient client, ISerializable serializable, TrafficDirection direction)
     {
         //if (direction == TrafficDirection.Send ) return;
         ReceivePacket(client, serializable);
