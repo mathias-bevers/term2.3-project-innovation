@@ -53,7 +53,7 @@ public class GameplayHandler : NetworkingBehaviour
             MarshMallowMovement[] data = FindObjectsOfType<MarshMallowMovement>();
             foreach (MarshMallowMovement m in data)
                 m.enabled = false;
-            WinningHandler w = gameObject.AddComponent<WinningHandler>();
+            WinningHandler w = transform.gameObject.AddComponent<WinningHandler>();
             w.Setup(winnerIDs, winWay);
             Destroy(this);
         }

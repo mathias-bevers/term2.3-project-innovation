@@ -16,10 +16,16 @@ public class WinningHandler : NetworkingBehaviour
         startup = true;
     }
 
+    float timer = 0;
+
     private void Update()
     {
         if (!startup) return;
 
+        timer += Time.deltaTime;
+        if(timer >= 3)
+        {
 
+        }
     }
 }

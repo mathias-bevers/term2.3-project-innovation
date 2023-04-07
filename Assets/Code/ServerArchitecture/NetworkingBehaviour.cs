@@ -9,7 +9,7 @@ using UnityEngine;
 
 public class NetworkingBehaviour : MonoBehaviour
 {
-    [SerializeField] internal NetworkTarget networkTarget;
+    [SerializeField] internal NetworkTarget networkTarget = NetworkTarget.Server;
 
     internal IRegistrable overrideClient;
     Dictionary<Type, List<DirectionalMethodInfo>> invokables = new Dictionary<Type, List<DirectionalMethodInfo>>();
