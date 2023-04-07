@@ -13,6 +13,7 @@ public class GameplayHandler : NetworkingBehaviour
     [SerializeField] BakingZones bakingZone;
 
     List<MarshMallowMovement> spawnedCharacters = new List<MarshMallowMovement>();
+    public List<MarshMallowMovement> SpawnedCharacters => spawnedCharacters;
 
     WinWay winWay = WinWay.None;
     List<int> winnerIDs = new List<int>();
