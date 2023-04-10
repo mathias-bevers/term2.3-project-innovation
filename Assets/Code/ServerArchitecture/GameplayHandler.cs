@@ -26,7 +26,7 @@ public class GameplayHandler : NetworkingBehaviour
     }
 
     [NetworkRegistry(typeof(UserList), TrafficDirection.Send)]
-    public void Receive(ServerClient client, UserList list,TrafficDirection direction)
+    public void Receive(ServerClient client, UserList list, TrafficDirection direction)
     {
         if (hasSpawned) return;
         if (list.Count != Settings.maxPlayerCount) return;
@@ -44,6 +44,8 @@ public class GameplayHandler : NetworkingBehaviour
         cameraMover?.Register(spawnedCharacters);
     }
 
+
+
     private void Update()
     {
         if(!endingAchieved) Clock();
@@ -53,7 +55,7 @@ public class GameplayHandler : NetworkingBehaviour
             MarshMallowMovement[] data = FindObjectsOfType<MarshMallowMovement>();
             foreach (MarshMallowMovement m in data)
                 m.enabled = false;
-            WinningHandler w = gameObject.AddComponent<WinningHandler>();
+            WinningHandler w = transform.gameObject.AddComponent<WinningHandler>();
             w.Setup(winnerIDs, winWay);
             Destroy(this);
         }

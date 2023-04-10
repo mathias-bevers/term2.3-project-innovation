@@ -64,7 +64,15 @@ public class UserClient : IRegistrable
         } catch(Exception e) { Debug.LogError(e); penaltyCount++; }
     }
 
-    void Awake() => DontDestroyOnLoad(this);
+    void Awake()
+    {
+        if (FindObjectsOfType<UserClient>().Length > 1)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        DontDestroyOnLoad(this); 
+    }
     void Start() => client.client.Connect(new IPEndPoint(Settings.ip, Settings.port));
     void Update() => HandleReadPackets();
     void OnEnable() => Register(ReceivePacket);

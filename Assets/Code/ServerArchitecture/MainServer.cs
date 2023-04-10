@@ -1,4 +1,5 @@
 using shared;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -14,6 +15,11 @@ public class MainServer : IRegistrable
 
     public void Awake()
     {
+        if (FindObjectsOfType<MainServer>().Length > 1)
+        {
+            Destroy(gameObject);
+            return;
+        }
         DontDestroyOnLoad(this);
         server.Declare<RequestNameChange>(new NetworkedCallback(HandleNameChange, TrafficDirection.Received));
         server.Declare<Disconnected>(new NetworkedCallback(HandleDisconnect, TrafficDirection.Both));
