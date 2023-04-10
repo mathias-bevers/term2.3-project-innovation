@@ -1,7 +1,5 @@
-﻿using System.IO.Compression;
-using System.IO;
-using System.Text;
-using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using System.Net;
 using System.Linq;
@@ -14,8 +12,8 @@ public static class Utils
         float y = UnityEngine.Random.Range(min.y, max.y);
         float z = UnityEngine.Random.Range(min.z, max.z);
 
-        return new Vector3(x, y, z);
-    }
+		return new Vector3(x, y, z);
+	}
 
-    
+	public static bool IsNullOrEmpty(this ICollection collection) => collection == null || collection.Count == 0;
 }
