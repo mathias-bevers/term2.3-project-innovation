@@ -65,11 +65,6 @@ public class ServerListener : TcpListener, PacketHandler
         RidDeadClients();
     }
 
-    public void FixedUpdate()
-    {
-
-    }
-
     public void SecondUpdate()
     {
         foreach (ServerClient client in Clients)
