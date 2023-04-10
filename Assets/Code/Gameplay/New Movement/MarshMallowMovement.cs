@@ -87,12 +87,17 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
         MarshMallowMovement movement;
         if ((movement = collision.collider.GetComponent<MarshMallowMovement>()) == null) return;
 
-        input = Vector3.zero;
-        rigidbody.velocity = Vector3.zero;
         Vector3 newPos = movement.transform.position;
         newPos.y = transform.position.y;
-        rigidbody.AddExplosionForce(10f, newPos, 2, 0, ForceMode.VelocityChange);
+        AddForce(newPos, 10f, blockTime);
+    }
+
+    public void AddForce(Vector3 impactPosition, float force, float stunTime)
+    {
+	    input = Vector3.zero;
+	    rigidbody.velocity = Vector3.zero;
+        rigidbody.AddExplosionForce(force, impactPosition, 2,0,ForceMode.VelocityChange);
         blockInput = true;
-        blockTimer = blockTime;
+        blockTimer = stunTime;
     }
 }
