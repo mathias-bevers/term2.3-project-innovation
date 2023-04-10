@@ -19,8 +19,9 @@ public class ServerNetworkUI : BaseNetworkedUI
     [NetworkRegistry(typeof(BakingPacket), TrafficDirection.Send)]
     public void Receive(ServerClient client, BakingPacket e, TrafficDirection direction)
     {
-        Debug.Log("Got baking packet!");
         base.ReceiveBakingPacket(e);
     }
+
+    //[NetworkRegistry(typeof())]
 
 }

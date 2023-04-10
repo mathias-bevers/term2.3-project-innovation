@@ -26,7 +26,7 @@ public class GameplayHandler : NetworkingBehaviour
     }
 
     [NetworkRegistry(typeof(UserList), TrafficDirection.Send)]
-    public void Receive(ServerClient client, UserList list,TrafficDirection direction)
+    public void Receive(ServerClient client, UserList list, TrafficDirection direction)
     {
         if (hasSpawned) return;
         if (list.Count != Settings.maxPlayerCount) return;
@@ -43,6 +43,8 @@ public class GameplayHandler : NetworkingBehaviour
         hasSpawned = true;
         cameraMover?.Register(spawnedCharacters);
     }
+
+
 
     private void Update()
     {
