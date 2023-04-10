@@ -1,13 +1,21 @@
-﻿using UnityEngine;
+﻿using System.IO.Compression;
+using System.IO;
+using System.Text;
+using System;
+using UnityEngine;
+using System.Net;
+using System.Linq;
 
 public static class Utils
 {
-	public static Vector3 GetRandomInRange(Vector3 min, Vector3 max)
-	{
-		float x = Random.Range(min.x, max.x);
-		float y = Random.Range(min.y, max.y);
-		float z = Random.Range(min.z, max.z);
+    public static Vector3 GetRandomInRange(Vector3 min, Vector3 max)
+    {
+        float x = UnityEngine.Random.Range(min.x, max.x);
+        float y = UnityEngine.Random.Range(min.y, max.y);
+        float z = UnityEngine.Random.Range(min.z, max.z);
 
-		return new Vector3(x, y, z);
-	}
+        return new Vector3(x, y, z);
+    }
+
+    
 }
