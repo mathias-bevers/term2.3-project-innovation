@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using NaughtyAttributes;
-using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -59,7 +58,7 @@ public class BurgerManager : MonoBehaviour
 		}
 
 		burgerRadius = burgerGO.GetComponent<Collider>().bounds.size.x * 0.5f;
-		distanceCutoff = burgerRadius * 2.4f;
+		distanceCutoff = burgerRadius * 5f;
 		shockZone = distanceCutoff - burgerRadius;
 	}
 

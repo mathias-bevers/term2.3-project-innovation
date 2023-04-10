@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 public static class Utils
 {
@@ -10,4 +12,6 @@ public static class Utils
 
 		return new Vector3(x, y, z);
 	}
+
+	public static bool IsNullOrEmpty(this ICollection collection) => collection == null || collection.Count == 0;
 }
