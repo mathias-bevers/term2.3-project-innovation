@@ -105,7 +105,6 @@ public class MainServer : IRegistrable
 
     void DoFixedUpdate()
     {
-        server.FixedUpdate();
         counter += Time.fixedUnscaledDeltaTime;
         if (counter >= 1)
         {

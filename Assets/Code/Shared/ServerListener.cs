@@ -25,6 +25,7 @@ public class ServerListener : TcpListener, PacketHandler
 
     public new void Start()
     {
+        //Debug.Log("Compressed: " + Utils.IpToInt32(Settings.serverIP.ToString()) + " : " + Utils.IpToInt32(Settings.port.ToString()));
         _isRunning = true;
         base.Start();
     }
@@ -62,11 +63,6 @@ public class ServerListener : TcpListener, PacketHandler
         HandleNewClients();
         HandleClients();
         RidDeadClients();
-    }
-
-    public void FixedUpdate()
-    {
-
     }
 
     public void SecondUpdate()
