@@ -25,9 +25,6 @@ public class ClientController : NetworkingBehaviour
             SendPackets();
             timer = 0;
         }
-
-        if (Input.GetKeyDown(KeyCode.R))
-            SendMessage(new RequestRespawn());
     }
 
     void SendPackets()

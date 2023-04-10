@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ClientNetworkedUI : BaseNetworkedUI
 {
@@ -20,5 +21,12 @@ public class ClientNetworkedUI : BaseNetworkedUI
     public void Receive(ServerClient client, BakingPacket e, TrafficDirection direction)
     {
         base.ReceiveBakingPacket(e);
+    }
+
+    [NetworkRegistry(typeof(BackToLobby), TrafficDirection.Send)]
+    public void Receive(ServerClient client, BackToLobby backToLobby, TrafficDirection direction)
+    {
+        Debug.LogError("LOBBY!");
+        SceneManager.LoadScene("Lobby");
     }
 }
