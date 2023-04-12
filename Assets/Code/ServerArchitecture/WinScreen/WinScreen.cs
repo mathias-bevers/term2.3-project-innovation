@@ -37,7 +37,7 @@ public class WinScreen : NetworkingBehaviour
 
         foreach(int id in winIDs)
         {
-            names += idToName[winIDs[0]] + ", ";
+            names += idToName[id] + ", ";
         }
 
         if (winWay == WinWay.SoloWin) typeWinText.text = "WINNER!";

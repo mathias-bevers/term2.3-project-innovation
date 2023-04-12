@@ -210,12 +210,16 @@ public class ServerListener : TcpListener, PacketHandler
 
     public void ReceivedPacket(ServerClient client, ISerializable current)
     {
-        bool earlyCatch = EarlyCatch(client, current);
+        try
+        {
+            bool earlyCatch = EarlyCatch(client, current);
 
-        Type storedType = current.GetType();
-        if (!earlyCatch) reader?.Invoke(client, current, TrafficDirection.Received);
-        if (callbacks.ContainsKey(storedType))
-            callbacks[storedType]?.Invoke(client, current, TrafficDirection.Received);
+            Type storedType = current.GetType();
+            if (!earlyCatch) reader?.Invoke(client, current, TrafficDirection.Received);
+            if (callbacks.ContainsKey(storedType))
+                callbacks[storedType]?.Invoke(client, current, TrafficDirection.Received);
+        }
+        catch { }
     }
 
     bool EarlyCatch(ServerClient client, ISerializable serializable)

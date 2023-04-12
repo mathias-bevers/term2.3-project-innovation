@@ -4,21 +4,19 @@ public class BakingPacket : ISerializable
 {
     public float maxBake;
     public BakingPacketData[] bakingPackets;
-    public int Count;
+    public int Count => bakingPackets.Length;
 
     public BakingPacket() { }
     public BakingPacket(float maxBake, BakingPacketData[] bakingPackets)
     {
         this.maxBake = maxBake;
         this.bakingPackets = bakingPackets;
-        this.Count = bakingPackets.Length;
     }
 
     public override void Deserialize(Packet pPacket)
     {
         maxBake = pPacket.ReadFloat();
-        Count = pPacket.ReadInt();
-        bakingPackets = new BakingPacketData[Count];
+        bakingPackets = new BakingPacketData[pPacket.ReadInt()];
         for(int i = 0; i < Count; i++)
         {
             bakingPackets[i] = new BakingPacketData(pPacket.ReadInt(), pPacket.ReadFloat());

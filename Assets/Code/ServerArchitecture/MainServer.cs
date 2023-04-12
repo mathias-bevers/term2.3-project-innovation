@@ -62,7 +62,8 @@ public class MainServer : IRegistrable
 
     void HandleLobbyLoading(ServerClient client, ISerializable serializable, TrafficDirection direction)
     {
-        serverStates = ServerStates.Returning;
+        server.Stop();
+        Destroy(gameObject);
     }
 
     void HandleLoadingEntered(ServerClient client, ISerializable serializable, TrafficDirection direction)
@@ -93,6 +94,8 @@ public class MainServer : IRegistrable
         server.SendMessages(server.Clients, new RequestNameChange(client.ID, nameChange.Name));
     }
 
+    float waitTimer = 0;
+
     void DoUpdate()
     {
         server.Update();
@@ -101,7 +104,13 @@ public class MainServer : IRegistrable
         else if (serverStates == ServerStates.Loading) { }
         else if (serverStates == ServerStates.Returning)
         {
-
+            waitTimer += Time.deltaTime;
+            if(waitTimer >= 4)
+            {
+                server.SendMessages(server.Clients, server.GenerateUserList());
+                serverStates = ServerStates.Lobby;
+                waitTimer = 0;
+            }
         }
     }
 

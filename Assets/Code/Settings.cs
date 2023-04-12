@@ -12,7 +12,7 @@ public static class Settings
     //public static IPAddress serverIP = GetIPAddress();
     //public static IPAddress serverIP = IPAddress.Any;
     //IPAddress.Broadcast;
-    public static IPAddress ip = IPAddress.Parse("145.53.12.100");
+    public static IPAddress ip = IPAddress.Parse("192.168.2.10");
     public static int port = Convert.ToInt32(45000);
     public const int maxPlayerCount = 4;
     public const float ticksPerSecond = 20;

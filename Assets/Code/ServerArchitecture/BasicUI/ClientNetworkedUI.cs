@@ -20,13 +20,17 @@ public class ClientNetworkedUI : BaseNetworkedUI
     [NetworkRegistry(typeof(BakingPacket), TrafficDirection.Received)]
     public void Receive(ServerClient client, BakingPacket e, TrafficDirection direction)
     {
+        Debug.LogError("Got baking packet! : " + e.bakingPackets.Length);
+       foreach(BakingPacketData data in e.bakingPackets)
+        {
+            Debug.LogError(data.ID + " : " + data.actualAmount);
+        }
         base.ReceiveBakingPacket(e);
     }
 
     [NetworkRegistry(typeof(BackToLobby), TrafficDirection.Received)]
     public void Receive(ServerClient client, BackToLobby backToLobby, TrafficDirection direction)
     {
-        Debug.LogError("LOBBY!");
         SceneManager.LoadScene("Lobby");
     }
 }

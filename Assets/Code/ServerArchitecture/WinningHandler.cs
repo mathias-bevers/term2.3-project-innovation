@@ -49,6 +49,8 @@ public class WinningHandler : NetworkingBehaviour
     [NetworkRegistry(typeof(BackToLobby), TrafficDirection.Send)]
     public void Receive(ServerClient client, BackToLobby backToLobby, TrafficDirection direction)
     {
+        ((MainServer)overrideClient).StopServer();
+        Destroy(overrideClient.gameObject);
         SceneManager.LoadScene("Lobby");
     }
 }

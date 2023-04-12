@@ -86,6 +86,7 @@ public class GameplayHandler : NetworkingBehaviour
 
     void HandleBaking()
     {
+        if (spawnedCharacters.Count == 0) return;
         foreach (MarshMallowMovement player in spawnedCharacters)
         {
             BakingData data = bakingZone.GetBonusValue(player);
@@ -104,18 +105,19 @@ public class GameplayHandler : NetworkingBehaviour
                 endingAchieved = true;
             }
         }
-        for(int i = 0; i < data2.Length; i++)
+        packet.bakingPackets = data2;
+        int winCount = 0;
+        for (int i = 0; i < data2.Length; i++)
         {
-            int winCount = 0;
             if (data2[i].actualAmount >= Settings.bakingMax)
             {
                 winnerIDs.Add(data2[i].ID);
                 winCount++;
             }
-            if (winCount == 1) winWay = WinWay.SoloWin;
-            else winWay = WinWay.TieWin;
         }
-        packet.bakingPackets = data2;
+        if (winCount == 1) winWay = WinWay.SoloWin;
+        else winWay = WinWay.TieWin;
+
         SendMessage(packet);
     }
     
