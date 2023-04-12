@@ -7,8 +7,8 @@ using UnityEditor;
 public static class Settings
 {
     public static string preferName = string.Empty;
-    public static IPAddress serverIP = IPAddress.Any; 
-    //public static IPAddress serverIP = IPAddress.Parse("192.168.2.10");
+    //public static IPAddress serverIP = IPAddress.Any; 
+    public static IPAddress serverIP = IPAddress.Parse("192.168.2.10");
     //public static IPAddress serverIP = GetIPAddress();
     //public static IPAddress serverIP = IPAddress.Any;
     //IPAddress.Broadcast;
