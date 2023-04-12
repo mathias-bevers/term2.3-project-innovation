@@ -24,6 +24,9 @@ EditorBuildSettings:
     path: Assets/Scenes/LoadingScene.unity
     guid: 4b6f74741d329f14ea3f05cfbe3fff3b
   - enabled: 1
+    path: Assets/Scenes/GameplayScene.unity
+    guid: 89c37fe70b46d6d49b7ac1675cae0ffa
+  - enabled: 0
     path: Assets/Scenes/MathiasScene.unity
     guid: 998f6ad8877b36a48a30160a95c0a6e8
   - enabled: 1

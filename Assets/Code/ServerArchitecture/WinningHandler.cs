@@ -41,6 +41,7 @@ public class WinningHandler : NetworkingBehaviour
             {
                 SendMessage(new BackToLobby());
                 hasSend2 = true;
+                
             }
         }
     }

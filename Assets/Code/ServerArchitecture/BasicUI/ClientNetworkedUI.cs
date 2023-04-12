@@ -23,7 +23,7 @@ public class ClientNetworkedUI : BaseNetworkedUI
         base.ReceiveBakingPacket(e);
     }
 
-    [NetworkRegistry(typeof(BackToLobby), TrafficDirection.Send)]
+    [NetworkRegistry(typeof(BackToLobby), TrafficDirection.Received)]
     public void Receive(ServerClient client, BackToLobby backToLobby, TrafficDirection direction)
     {
         Debug.LogError("LOBBY!");

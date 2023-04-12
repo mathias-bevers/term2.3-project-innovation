@@ -22,7 +22,7 @@ public class BaseLobbyHandler : NetworkingBehaviour
     float timer = 0;
     bool startLoading = false;
 
-    private void Update()
+    public virtual void Update()
     {
         if (!startLoading) return;
         if (timer > 0) timer -= Time.deltaTime;

@@ -1,8 +1,10 @@
 using shared;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using UnityEngine;
 using static PacketHandler;
 
@@ -11,7 +13,7 @@ public class ServerListener : TcpListener, PacketHandler
     public ServerListener(IPAddress localaddr, int port, int maxPlayerCount) : base(localaddr, port) { this.maxPlayerCount = maxPlayerCount; }
 
     readonly int maxPlayerCount = 4;
-    bool _isRunning = false;
+    public bool _isRunning = false;
 
     int currentServerCount = 0;
 
@@ -23,10 +25,13 @@ public class ServerListener : TcpListener, PacketHandler
 
     public List<ServerClient> Clients { get { return _clients; } }
 
+    List<GottenPacket> lastGotten = new List<GottenPacket>();
+
     public new void Start()
     {
-        //Debug.Log("Compressed: " + Utils.IpToInt32(Settings.serverIP.ToString()) + " : " + Utils.IpToInt32(Settings.port.ToString()));
         _isRunning = true;
+        ExclusiveAddressUse = false;
+
         base.Start();
     }
 
@@ -60,6 +65,21 @@ public class ServerListener : TcpListener, PacketHandler
     public void Update()
     {
         if (!_isRunning) return;
+
+        ThatAsyncMethod();
+
+        for(int i = lastGotten.Count - 1; i >= 0; i--)
+        {
+            GottenPacket packet = lastGotten[i];
+            ReceivedPacket(packet.client, packet.serializable);
+            lastGotten.RemoveAt(i);
+        }
+    }
+
+
+
+    public void ThatAsyncMethod()
+    {
         HandleNewClients();
         HandleClients();
         RidDeadClients();
@@ -142,18 +162,20 @@ public class ServerListener : TcpListener, PacketHandler
             try
             {
                 reader?.Invoke(client, message, TrafficDirection.Send);
-                StreamUtil.Write(client.stream, packetBytes);
+                new Thread(() => StreamUtil.Write(client.stream, packetBytes)).Start();
             }
             catch { }
         }
     }
-
+    
     Packet Convert(ISerializable serializable)
     {
         Packet packet = new Packet();
         packet.Write(serializable);
         return packet;
     }
+
+
 
     void HandleClients()
     {
@@ -163,12 +185,15 @@ public class ServerListener : TcpListener, PacketHandler
             try
             {
                 if (client.client.Available == 0) continue;
-
-                byte[] gottenBytes = StreamUtil.Read(client.client.GetStream());
-                Packet packet = new Packet(gottenBytes);
-                ISerializable current = packet.Read<ISerializable>();
-                ReceivedPacket(client, current);
-
+                new Thread(() =>
+                {
+                    byte[] gottenBytes = StreamUtil.Read(client.client.GetStream());
+                    Packet packet = new Packet(gottenBytes);
+                    ISerializable current = packet.Read<ISerializable>();
+                    //ReceivedPacket(client, current);
+                    lastGotten.Add(new GottenPacket(client, current));
+                }).Start();
+                
             }
             catch (Exception e) { Debug.LogError(e); }
         }
@@ -176,7 +201,7 @@ public class ServerListener : TcpListener, PacketHandler
 
     public ServerClient GetClientByID(int id)
     {
-       foreach(ServerClient client in _clients)
+        foreach (ServerClient client in _clients)
         {
             if (client.ID == id) return client;
         }
@@ -208,5 +233,17 @@ public class ServerListener : TcpListener, PacketHandler
     public void SendPacket(ISerializable serializable)
     {
         SendMessages(Clients, serializable);
+    }
+}
+
+public struct GottenPacket
+{
+    public ServerClient client;
+    public ISerializable serializable;
+
+    public GottenPacket(ServerClient client, ISerializable serializable)
+    {
+        this.client = client;
+        this.serializable = serializable;
     }
 }
