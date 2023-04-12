@@ -10,6 +10,7 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
     [SerializeField] float maxSpeed = 100;
     [SerializeField] float speed = 8;
     [SerializeField] float blockTime = 0.8f;
+    [SerializeField] float rotationSpeed = 90;
     [SerializeField] MeshRenderer indicator;
 
     [SerializeField] List<ColourMaterial> colours = new List<ColourMaterial>();
@@ -34,13 +35,7 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
         SerializableVector2 input = packet.input;
         this.input = new Vector2(input.x, input.y);
     }
-
-    [NetworkRegistry(typeof(RequestRespawn), TrafficDirection.Received)]
-    public void Receive(ServerClient client, RequestRespawn packet, TrafficDirection direction)
-    {
-        transform.position = new Vector3(0, 1, 0);
-    }
-
+    
     public void SetColour(ColourType type)
     {
         foreach(var colour in colours)
@@ -72,6 +67,8 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
         Vector2 actInput = input;
         if(actInput.magnitude > 1) actInput.Normalize();
         if (actInput.y < 0) actInput.y *= 0.68f;
+        transform.Rotate(new Vector3(0, rotationSpeed * actInput.x * Time.fixedDeltaTime, 0));
+
         Vector3 newInput = new Vector3(0, 0, actInput.y);
         newInput *= speed * Time.fixedDeltaTime;
         rigidbody.AddRelativeForce(newInput, ForceMode.Impulse);
@@ -82,6 +79,10 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
         float division = maxSpeed / velocity.magnitude;
         Vector3 newVelocity = velocity * division;
         rigidbody.velocity = newVelocity;
+
+
+      
+        
     }
     public void OnCollisionStay(Collision collision)
     {
@@ -98,6 +99,7 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
 	    input = Vector3.zero;
 	    rigidbody.velocity = Vector3.zero;
         rigidbody.AddExplosionForce(force, impactPosition, 2,0,ForceMode.VelocityChange);
+        rigidbody.transform.LookAt(impactPosition);
         blockInput = true;
         blockTimer = stunTime;
     }
