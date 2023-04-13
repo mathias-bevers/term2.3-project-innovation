@@ -55,6 +55,7 @@ namespace shared
 		public ISerializable ReadObject() 
 		{
 			Type type = Type.GetType(ReadString());
+			if (type == null) return null;
 			ISerializable obj = (ISerializable)Activator.CreateInstance(type);
 			obj.Deserialize(this);
 			return obj;

@@ -1474,6 +1474,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   networkTarget: 2
+  joystick: {fileID: 0}
+  lastInputs: {x: 0, y: 0}
 --- !u!114 &1716214075
 MonoBehaviour:
   m_ObjectHideFlags: 0

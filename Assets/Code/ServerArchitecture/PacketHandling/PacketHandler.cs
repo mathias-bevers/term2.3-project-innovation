@@ -31,5 +31,6 @@ public enum NetworkTarget
 {
     Client,
     Server,
-    FakeClient
+    FakeClient,
+    None
 }

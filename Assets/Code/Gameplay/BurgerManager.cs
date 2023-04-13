@@ -30,7 +30,7 @@ public class BurgerManager : MonoBehaviour
 		cachedTransform = transform;
 	}
 
-	[Button("Spawn burger")]
+	[NaughtyAttributes.Button("Spawn burger")]
 	public void InitializeNewZone()
 	{
 		if (activeBurgers.Count >= maxBurgers) { return; }

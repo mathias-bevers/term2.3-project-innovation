@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Net;
 using System.Linq;
 
-public static class Utils
+public static partial class Utils
 {
     public static Vector3 GetRandomInRange(Vector3 min, Vector3 max)
     {
