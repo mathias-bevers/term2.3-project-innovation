@@ -18,7 +18,6 @@ public class ClientController : NetworkingBehaviour
         inputCount++;
         lastInputs += new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 
-
         timer += Time.deltaTime;
         if(timer >= delay)
         {
