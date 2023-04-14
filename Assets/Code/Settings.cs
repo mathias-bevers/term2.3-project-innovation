@@ -9,9 +9,10 @@ public static class Settings
     public static string preferName = string.Empty;
     public static IPAddress serverIP = IPAddress.Parse("127.0.0.1");
     //public static IPAddress serverIP = IPAddress.Any;
-        //IPAddress.Broadcast;
+    //IPAddress.Broadcast;
     public static IPAddress ip = IPAddress.Parse("127.0.0.1");
-    public static int port = Convert.ToInt32(25565);
+    //public static int port = Convert.ToInt32(25565);
+    public static int port = Convert.ToInt32(55666);
     public const int maxPlayerCount = 4;
     public const float ticksPerSecond = 20;
 
