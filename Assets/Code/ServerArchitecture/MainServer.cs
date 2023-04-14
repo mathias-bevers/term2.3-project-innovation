@@ -33,7 +33,7 @@ public class MainServer : IRegistrable
 
     bool hasQuit = false;
 
-    void HandleDisconnect(ServerClient client, ISerializable serializable, TrafficDirection direction)
+    public void HandleDisconnect(ServerClient client, ISerializable serializable, TrafficDirection direction)
     {
         if (serverStates == ServerStates.Lobby) server.DisconnectClient(client);
         else
@@ -99,6 +99,11 @@ public class MainServer : IRegistrable
     void DoUpdate()
     {
         server.Update();
+
+        if(server.Clients.Count != Settings.maxPlayerCount && serverStates != ServerStates.Lobby)
+        {
+            HandleDisconnect(null, new Disconnected(), TrafficDirection.Received);
+        }
 
         if (serverStates == ServerStates.Lobby) InLobby();
         else if (serverStates == ServerStates.Loading) { }

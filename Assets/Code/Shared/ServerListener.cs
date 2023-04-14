@@ -68,7 +68,7 @@ public class ServerListener : TcpListener, PacketHandler
 
         ThatAsyncMethod();
 
-        for(int i = lastGotten.Count - 1; i >= 0; i--)
+        for (int i = lastGotten.Count - 1; i >= 0; i--)
         {
             GottenPacket packet = lastGotten[i];
             ReceivedPacket(packet.client, packet.serializable);
@@ -101,6 +101,7 @@ public class ServerListener : TcpListener, PacketHandler
         {
             ServerClient cur = Clients[i];
             if (!cur.markAsDead) continue;
+            cur?.client?.Close();
             DisconnectClient(cur);
         }
     }
@@ -159,15 +160,19 @@ public class ServerListener : TcpListener, PacketHandler
         if (clients.Length == 0) reader?.Invoke(null, message, TrafficDirection.Send);
         foreach (ServerClient client in clients)
         {
+            reader?.Invoke(client, message, TrafficDirection.Send);
             try
             {
-                reader?.Invoke(client, message, TrafficDirection.Send);
-                new Thread(() => StreamUtil.Write(client.stream, packetBytes)).Start();
+                //new Thread(() => StreamUtil.Write(client.stream, packetBytes)).Start();
+                StreamUtil.Write(client.stream, packetBytes);
             }
-            catch { }
+            catch(Exception e)
+            {
+                
+            }
         }
     }
-    
+
     Packet Convert(ISerializable serializable)
     {
         Packet packet = new Packet();
@@ -185,15 +190,15 @@ public class ServerListener : TcpListener, PacketHandler
             try
             {
                 if (client.client.Available == 0) continue;
-                new Thread(() =>
-                {
-                    byte[] gottenBytes = StreamUtil.Read(client.client.GetStream());
-                    Packet packet = new Packet(gottenBytes);
-                    ISerializable current = packet.Read<ISerializable>();
-                    //ReceivedPacket(client, current);
-                    lastGotten.Add(new GottenPacket(client, current));
-                }).Start();
-                
+                //new Thread(() =>
+                //{
+                byte[] gottenBytes = StreamUtil.Read(client.client.GetStream());
+                Packet packet = new Packet(gottenBytes);
+                ISerializable current = packet.Read<ISerializable>();
+                ReceivedPacket(client, current);
+                //lastGotten.Add(new GottenPacket(client, current));
+                //}).Start();
+
             }
             catch (Exception e) { Debug.LogError(e); }
         }
