@@ -84,7 +84,7 @@ public class MainServer : IRegistrable
     {
         RequestNameChange nameChange = (RequestNameChange)serializable;
         string name = nameChange.Name;
-        if (name.Length <= 3) return;
+        if (name.Length < 3) return;
         if (name.Length > 12) return;
         foreach (ServerClient cli in server.Clients)
             if (cli.self.Name.ToLower() == name.ToLower())

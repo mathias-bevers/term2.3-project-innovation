@@ -77,7 +77,7 @@ public class LobbyHandler : BaseLobbyHandler
             UserClient userClient = overrideClient as UserClient;
             Destroy(userClient.gameObject);
         }
-        SceneManager.LoadScene("IPScene");
+        SceneManager.LoadScene("MainMenu");
     }
 
     public void ReadyPressed()

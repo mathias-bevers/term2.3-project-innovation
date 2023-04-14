@@ -11,9 +11,9 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
     [SerializeField] float speed = 8;
     [SerializeField] float blockTime = 0.8f;
     [SerializeField] float rotationSpeed = 90;
-    [SerializeField] MeshRenderer indicator;
+    //[SerializeField] MeshRenderer indicator;
 
-    [SerializeField] List<ColourMaterial> colours = new List<ColourMaterial>();
+    [SerializeField] List<ColourToObj> colours = new List<ColourToObj>();
 
     public float currentBurnedCounter = 0;
 
@@ -40,8 +40,8 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
     {
         foreach(var colour in colours)
         {
-            if (colour.colourType != type) continue;
-            indicator.material = colour.colourMaterial;
+            if (colour.Colour != type) continue;
+            colour.obj.SetActive(true);
         }
     }
 
@@ -104,4 +104,11 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
         blockInput = true;
         blockTimer = stunTime;
     }
+}
+
+[System.Serializable]
+public struct ColourToObj
+{
+    public ColourType Colour;
+    public GameObject obj;
 }

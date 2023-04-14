@@ -32,7 +32,7 @@ public class UserClient : IRegistrable
         if(timerWithoutHeartbeat >= 3.5f || penaltyCount >= 5)
         {
             SendPacket(new Disconnected());
-            SceneManager.LoadScene("IPScene");
+            SceneManager.LoadScene("MainMenu");
             Destroy(this);
             return;
         }

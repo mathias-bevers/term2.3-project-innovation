@@ -71,12 +71,12 @@ Material:
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _Lumin: 0
-    - _MaxLight: 1
+    - _MaxLight: 0.77
     - _Metallic: 0
-    - _MinLight: 0
+    - _MinLight: 0.052
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _Offset: -0.7
+    - _Offset: -0.71
     - _Parallax: 0.02
     - _Segmented: 1
     - _ShnIntense: 0.277

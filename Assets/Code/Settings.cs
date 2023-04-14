@@ -6,6 +6,7 @@ using UnityEditor;
 
 public static class Settings
 {
+    public static bool automaticReconnect = false;
     public static string preferName = string.Empty;
     //public static IPAddress serverIP = IPAddress.Any; 
     public static IPAddress serverIP = IPAddress.Parse("192.168.2.10");
