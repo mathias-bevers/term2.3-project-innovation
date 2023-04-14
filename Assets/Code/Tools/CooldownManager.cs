@@ -19,8 +19,6 @@ public static class CooldownManager
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void Init()
     {
-        Debug.Log("Setting up cooldownManager");
-
         GameObject obj = new GameObject("Cooldown Manager");
         obj.hideFlags = HideFlags.HideInHierarchy;
         UnityEngine.Object.DontDestroyOnLoad(obj);
