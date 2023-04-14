@@ -61,12 +61,14 @@ public class ClientController : NetworkingBehaviour
         Vector2 joystickInputs = Vector2.zero;
         if (joystick != null)
             joystickInputs = joystick.Direction;
-        Vector2 gyroInputs = new Vector2(Input.gyro.userAcceleration.x, Input.gyro.userAcceleration.y);
+        //Vector2 gyroInputs = new Vector2(Input.gyro.attitude.eulerAngles.z, Input.gyro.attitude.eulerAngles.x);
 
         Vector2 finalInputs = keyboardInputs;
 
-        if (ClientSettings.useGyro)  finalInputs += gyroInputs; 
-        else finalInputs += joystickInputs;
+        //if (ClientSettings.useGyro)
+        //finalInputs += gyroInputs; 
+        //else
+        finalInputs += joystickInputs;
 
         if (finalInputs.magnitude > 1) finalInputs = finalInputs.normalized;
 

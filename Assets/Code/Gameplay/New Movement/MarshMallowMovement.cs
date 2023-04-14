@@ -67,9 +67,10 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
         Vector2 actInput = input;
         if(actInput.magnitude > 1) actInput.Normalize();
         if (actInput.y < 0) actInput.y *= 0.68f;
-        transform.Rotate(new Vector3(0, rotationSpeed * actInput.x * Time.fixedDeltaTime, 0));
+        // transform.Rotate(new Vector3(0, rotationSpeed * actInput.x * Time.fixedDeltaTime, 0));
+        transform.rotation = Quaternion.LookRotation(new Vector3(actInput.x, 0, actInput.y));
 
-        Vector3 newInput = new Vector3(0, 0, actInput.y);
+         Vector3 newInput = new Vector3(0, 0, actInput.magnitude);
         newInput *= speed * Time.fixedDeltaTime;
         rigidbody.AddRelativeForce(newInput, ForceMode.Impulse);
 
