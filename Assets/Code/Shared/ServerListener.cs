@@ -163,12 +163,12 @@ public class ServerListener : TcpListener, PacketHandler
             reader?.Invoke(client, message, TrafficDirection.Send);
             try
             {
-                //new Thread(() => StreamUtil.Write(client.stream, packetBytes)).Start();
-                StreamUtil.Write(client.stream, packetBytes);
+                new Thread(() => StreamUtil.Write(client.stream, packetBytes)).Start();
+                //StreamUtil.Write(client.stream, packetBytes);
             }
             catch(Exception e)
             {
-                
+                Debug.Log(e.Message);
             }
         }
     }
@@ -190,14 +190,14 @@ public class ServerListener : TcpListener, PacketHandler
             try
             {
                 if (client.client.Available == 0) continue;
-                //new Thread(() =>
-                //{
+                new Thread(() =>
+                {
                 byte[] gottenBytes = StreamUtil.Read(client.client.GetStream());
                 Packet packet = new Packet(gottenBytes);
                 ISerializable current = packet.Read<ISerializable>();
-                ReceivedPacket(client, current);
-                //lastGotten.Add(new GottenPacket(client, current));
-                //}).Start();
+                //ReceivedPacket(client, current);
+                lastGotten.Add(new GottenPacket(client, current));
+                }).Start();
 
             }
             catch (Exception e) { Debug.LogError(e); }
