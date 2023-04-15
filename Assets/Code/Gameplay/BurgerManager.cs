@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine;
+using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
 public class BurgerManager : MonoBehaviour
@@ -20,12 +21,17 @@ public class BurgerManager : MonoBehaviour
 	private float distanceCutoff;
 	private float shockZone;
 
+	[SerializeField] float minRadius = 3;
+	[SerializeField] float maxRadius = 9;
+	[SerializeField] float spawnHeight = 15;
+
+	[SerializeField] UnityEvent burgerLanded;
+	 
 	private void Awake()
 	{
 		if (burgerPrefab == null) { throw new NullReferenceException("zonePrefab needs be set in the editor"); }
 
-		gameplayHandler = FindObjectOfType<GameplayHandler>() ??
-		                  throw new NoComponentFoundException($"The object {nameof(GameplayHandler)} could not be found in the scene");
+		gameplayHandler = Utils.FindObjectOfTypeThrow<GameplayHandler>();
 
 		cachedTransform = transform;
 	}
@@ -35,18 +41,17 @@ public class BurgerManager : MonoBehaviour
 	{
 		if (activeBurgers.Count >= maxBurgers) { return; }
 
-		float distance = Random.Range(3.0f, 9.0f);
+		float distance = Random.Range(minRadius, maxRadius);
 		Vector2 position = Random.insideUnitCircle;
 		position.Normalize();
 		position *= distance;
 
 		Debug.Log($"Spawning burger at {position}");
 
-		GameObject burgerGO = Instantiate(burgerPrefab, new Vector3(position.x, 10, position.y), Quaternion.identity);
+		GameObject burgerGO = Instantiate(burgerPrefab, new Vector3(position.x, spawnHeight, position.y), Quaternion.identity);
 		burgerGO.transform.SetParent(cachedTransform);
 
-		Burger burger = burgerGO.GetComponent<Burger>() ??
-		                     throw new NoComponentFoundException("prefab does not have a \'Burger\' component.");
+		Burger burger = burgerGO.GetComponentThrow<Burger>();
 
 		burger.LandedEvent += OnBurgerLanded;
 
@@ -70,7 +75,9 @@ public class BurgerManager : MonoBehaviour
 
 	private void OnBurgerLanded(Burger burger)
 	{
-		burger.LandedEvent -= OnBurgerLanded;
+		burgerLanded?.Invoke();
+
+        burger.LandedEvent -= OnBurgerLanded;
 		CooldownManager.Cooldown(despawnDelay, BurgerDespawn, burger);
 
 

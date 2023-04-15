@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(CapsuleCollider))]
@@ -21,6 +22,8 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
     bool blockInput = false;
     private new Rigidbody rigidbody;
     private Vector2 input;
+
+    [SerializeField] UnityEvent onBounce;
 
     internal override void Awoken()
     {
@@ -87,12 +90,25 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
     }
     public void OnCollisionStay(Collision collision)
     {
-        MarshMallowMovement movement;
-        if ((movement = collision.collider.GetComponent<MarshMallowMovement>()) == null) return;
+        Component movement;
+        if ((movement = GetOneOfThe(collision)) == null) return;
 
         Vector3 newPos = movement.transform.position;
         newPos.y = transform.position.y;
         AddForce(newPos, 10f, blockTime);
+    }
+
+    Component GetOneOfThe(Collision collision)
+    {
+        Collider collider = collision.collider;
+
+        MarshMallowMovement movement = collider.GetComponent<MarshMallowMovement>();
+        Burger burger = collider.GetComponent<Burger>();
+
+        if(movement != null) return movement;
+        if(burger != null) return burger;
+
+        return null;
     }
 
     public void AddForce(Vector3 impactPosition, float force, float stunTime)
@@ -103,6 +119,7 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
         rigidbody.transform.LookAt(impactPosition);
         blockInput = true;
         blockTimer = stunTime;
+        onBounce?.Invoke();
     }
 }
 
