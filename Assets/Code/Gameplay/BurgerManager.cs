@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
-public class BurgerManager : MonoBehaviour
+public class BurgerManager : EventManager
 {
 	private readonly List<Burger> activeBurgers = new();
 
@@ -37,7 +37,7 @@ public class BurgerManager : MonoBehaviour
 	}
 
 	[NaughtyAttributes.Button("Spawn burger")]
-	public void InitializeNewZone()
+	public override void SpawnEvent()
 	{
 		if (activeBurgers.Count >= maxBurgers) { return; }
 

@@ -138,26 +138,31 @@ public class IPTyperNew : MonoBehaviour
         if(ip.ToLower() == "self")
         {
             Settings.ip = IPAddress.Parse("127.0.0.1".Trim());
+            Settings.serverIP = Settings.ip;
             return true;
         }
         else if(ip.ToLower() == "localhost")
         {
             Settings.ip = Settings.GetIPAddress();
+            Settings.serverIP = Settings.ip;
             return true;
         }
         else if(ip.ToLower() == "any")
         {
             Settings.ip = IPAddress.Any;
+            Settings.serverIP = Settings.ip;
             return true;
         }
         else if(ip.ToLower() == "loopback")
         {
             Settings.ip = IPAddress.Loopback;
+            Settings.serverIP = Settings.ip;
             return true;
         }
         else if (ip.ToLower() == "broadcast")
         {
             Settings.ip = IPAddress.Broadcast;
+            Settings.serverIP = Settings.ip;
             return true;
         }
         if (ip.Length < 7 || ip.Length > 16) return false;
@@ -166,6 +171,7 @@ public class IPTyperNew : MonoBehaviour
         try
         {
             Settings.ip = IPAddress.Parse(ip.Trim());
+            Settings.serverIP = Settings.ip;
         }
         catch(Exception e) { Debug.Log(e.Message); return false; }
         return true;
@@ -177,7 +183,7 @@ public class IPTyperNew : MonoBehaviour
 
         try
         {
-            Settings.port = int.Parse(port);
+            Settings.port = int.Parse(port.Trim());
         }
         catch { return false; }
         return true;
