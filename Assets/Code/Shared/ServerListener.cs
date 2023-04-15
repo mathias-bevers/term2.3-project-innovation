@@ -30,8 +30,6 @@ public class ServerListener : TcpListener, PacketHandler
     public new void Start()
     {
         _isRunning = true;
-        ExclusiveAddressUse = false;
-
         base.Start();
     }
 

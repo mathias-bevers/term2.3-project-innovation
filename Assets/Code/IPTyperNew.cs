@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -133,9 +134,10 @@ public class IPTyperNew : MonoBehaviour
 
     bool IPState(string ip)
     {
+        ip = ip.Trim();
         if(ip.ToLower() == "self")
         {
-            Settings.ip = IPAddress.Parse("127.0.0.1");
+            Settings.ip = IPAddress.Parse("127.0.0.1".Trim());
             return true;
         }
         else if(ip.ToLower() == "localhost")
@@ -163,9 +165,9 @@ public class IPTyperNew : MonoBehaviour
 
         try
         {
-            Settings.ip = IPAddress.Parse(ip);
+            Settings.ip = IPAddress.Parse(ip.Trim());
         }
-        catch { return false; }
+        catch(Exception e) { Debug.Log(e.Message); return false; }
         return true;
     }
 
