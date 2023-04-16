@@ -18,6 +18,8 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
 
     [SerializeField] List<ColourToObj> colours = new List<ColourToObj>();
 
+    [SerializeField] SetGoldenState setGoldenState;
+
     public float currentBurnedCounter = 0;
 
     float blockTimer = 0;
@@ -40,7 +42,17 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
         SerializableVector2 input = packet.input;
         this.input = new Vector2(input.x, input.y);
     }
-    
+
+    [NetworkRegistry(typeof(BakingPacket), TrafficDirection.Send)]
+    public void Receive(ServerClient client, BakingPacket packet, TrafficDirection direction)
+    {
+       foreach(BakingPacketData data in packet.bakingPackets)
+        {
+            if(data.ID != allowedID) continue;
+            setGoldenState.SetState(data.actualAmount / packet.maxBake);
+        }
+    }
+
     public void SetColour(ColourType type)
     {
         foreach(var colour in colours)
@@ -87,12 +99,9 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
         Vector3 velocity = rigidbody.velocity;
         float division = maxSpeed / velocity.magnitude;
         Vector3 newVelocity = velocity * division;
-        rigidbody.velocity = newVelocity;
-
-
-      
-        
+        rigidbody.velocity = newVelocity;       
     }
+
     public void OnCollisionStay(Collision collision)
     {
         Component movement;
