@@ -106,6 +106,8 @@ public class AudioClipGroup : MonoBehaviour
     }
     private void Update()
     {
+        internalVolume = ClientSettings.volume;
+
 #if UNITY_EDITOR
         if (Input.GetKeyDown(resetKey)) ResetValues();
         if (!playing) if (Input.GetKeyDown(enableKey)) Play();

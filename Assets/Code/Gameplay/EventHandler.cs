@@ -5,11 +5,21 @@ using UnityEngine;
 
 public class EventHandler : MonoBehaviour
 {
+    [SerializeField] float minTime = 10;
+    [SerializeField] float maxTime = 30;
+
     [SerializeField] AudioClipGroup clipGroup;
     [SerializeField] List<EventManager> handlers = new List<EventManager>();
 
     float timer = 0;
     bool inSpawnEvent = false;
+
+    float eventTimer;
+
+    public void Awake()
+    {
+        eventTimer = UnityEngine.Random.Range(minTime, maxTime);
+    }
 
     [Button("Spawn Event")]
     public void SpawnEvent()
@@ -22,6 +32,12 @@ public class EventHandler : MonoBehaviour
 
     private void Update()
     {
+        eventTimer -= Time.deltaTime;
+        if(eventTimer <= 0)
+        {
+            eventTimer = UnityEngine.Random.Range(minTime, maxTime);
+            SpawnEvent();
+        }
         if (!inSpawnEvent) return;
         timer += Time.deltaTime;
         if(timer > 1)

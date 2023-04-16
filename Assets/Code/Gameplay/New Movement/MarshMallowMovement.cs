@@ -14,6 +14,8 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
     [SerializeField] float rotationSpeed = 90;
     //[SerializeField] MeshRenderer indicator;
 
+    [SerializeField] Animator animator;
+
     [SerializeField] List<ColourToObj> colours = new List<ColourToObj>();
 
     public float currentBurnedCounter = 0;
@@ -52,6 +54,9 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
     {
         blockTimer -= Time.deltaTime;
         if (blockTimer <= 0) blockInput = false;
+
+        animator.SetFloat("vel", rigidbody.velocity.magnitude);
+        animator.SetBool("stun", blockInput);
     }
 
     private void FixedUpdate()
