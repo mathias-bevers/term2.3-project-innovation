@@ -129,6 +129,7 @@ public class IPTyperNew : MonoBehaviour
     bool NameState(string name)
     {
         if (name.Length < 2 || name.Length > 12) return false;
+        Settings.preferName = name;
         return true;
     }
 

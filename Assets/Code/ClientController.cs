@@ -62,12 +62,15 @@ public class ClientController : NetworkingBehaviour
         if (joystick != null)
             joystickInputs = joystick.Direction;
 
+#if !PLATFORM_STANDALONE_WIN
         Vector2 gyroInputs = new Vector2(Utils.Map(Input.gyro.gravity.x, -0.3f, 0.3f, -1, 1), Utils.Map(Input.gyro.gravity.y, -0.6f, 0, -1, 1));
-
+#endif
         Vector2 finalInputs = keyboardInputs;
 
+        #if !PLATFORM_STANDALONE_WIN
         if (ClientSettings.useGyro)
         finalInputs += gyroInputs; 
+#endif
         //else
         finalInputs += joystickInputs;
 

@@ -65,7 +65,7 @@ public class GameplayHandler : NetworkingBehaviour
     void Clock()
     {
         timer += Time.deltaTime;
-        if (!hasSpawned && timer >= 0.5f)
+        if (!hasSpawned && timer >= 3.0f)
         {
             SendMessage(FindObjectOfType<MainServer>().GetUserList());
             timer = 0;
