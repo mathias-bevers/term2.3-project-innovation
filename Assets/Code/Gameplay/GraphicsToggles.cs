@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class GraphicsToggles : MonoBehaviour
@@ -27,6 +28,23 @@ public class GraphicsToggles : MonoBehaviour
 
 		ClientSettings.graphicsMode = mode;
 		QualitySettings.SetQualityLevel((int)mode, true);
+
+		switch (mode)
+		{
+			case GraphicsMode.VeryLow:
+				Application.targetFrameRate = 30;
+				break;
+
+			case GraphicsMode.Medium:
+				Application.targetFrameRate = 45;
+				break;
+
+			case GraphicsMode.Ultra:
+				Application.targetFrameRate = 60;
+				break;
+
+			default: throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
+		}
 	}
 }
 
