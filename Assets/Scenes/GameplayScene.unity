@@ -3138,6 +3138,42 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0.9000244
       objectReference: {fileID: 0}
+    - target: {fileID: 2567662448536836359, guid: 2e06a9efa7530674fa33cc82292e7669, type: 3}
+      propertyPath: colours.Array.data[0].colourMaterial.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2567662448536836359, guid: 2e06a9efa7530674fa33cc82292e7669, type: 3}
+      propertyPath: colours.Array.data[0].colourMaterial.g
+      value: 0.7924528
+      objectReference: {fileID: 0}
+    - target: {fileID: 2567662448536836359, guid: 2e06a9efa7530674fa33cc82292e7669, type: 3}
+      propertyPath: colours.Array.data[0].colourMaterial.r
+      value: 0.07769159
+      objectReference: {fileID: 0}
+    - target: {fileID: 2567662448536836359, guid: 2e06a9efa7530674fa33cc82292e7669, type: 3}
+      propertyPath: colours.Array.data[1].colourMaterial.g
+      value: 0.543159
+      objectReference: {fileID: 0}
+    - target: {fileID: 2567662448536836359, guid: 2e06a9efa7530674fa33cc82292e7669, type: 3}
+      propertyPath: colours.Array.data[2].colourMaterial.b
+      value: 0.7830189
+      objectReference: {fileID: 0}
+    - target: {fileID: 2567662448536836359, guid: 2e06a9efa7530674fa33cc82292e7669, type: 3}
+      propertyPath: colours.Array.data[2].colourMaterial.g
+      value: 0.07682447
+      objectReference: {fileID: 0}
+    - target: {fileID: 2567662448536836359, guid: 2e06a9efa7530674fa33cc82292e7669, type: 3}
+      propertyPath: colours.Array.data[2].colourMaterial.r
+      value: 0.4730742
+      objectReference: {fileID: 0}
+    - target: {fileID: 2567662448536836359, guid: 2e06a9efa7530674fa33cc82292e7669, type: 3}
+      propertyPath: colours.Array.data[3].colourMaterial.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2567662448536836359, guid: 2e06a9efa7530674fa33cc82292e7669, type: 3}
+      propertyPath: colours.Array.data[3].colourMaterial.r
+      value: 0.97654676
+      objectReference: {fileID: 0}
     - target: {fileID: 2567662449153482858, guid: 2e06a9efa7530674fa33cc82292e7669, type: 3}
       propertyPath: m_RootOrder
       value: 8

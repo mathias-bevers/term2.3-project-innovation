@@ -878,7 +878,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.039230347}
+  m_AnchoredPosition: {x: 0, y: 0.039245605}
   m_SizeDelta: {x: 0, y: -0.13999939}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1270623731
@@ -1866,10 +1866,10 @@ MonoBehaviour:
   usernameText: {fileID: 1787576533}
   colours:
   - colourType: 0
-    colourMaterial: {r: 0.09854245, g: 1, b: 0, a: 1}
+    colourMaterial: {r: 0.07769159, g: 0.7924528, b: 0, a: 1}
   - colourType: 1
-    colourMaterial: {r: 1, g: 0.028810278, b: 0, a: 1}
+    colourMaterial: {r: 1, g: 0.543159, b: 0, a: 1}
   - colourType: 2
-    colourMaterial: {r: 0, g: 0.8312559, b: 1, a: 1}
+    colourMaterial: {r: 0.4730742, g: 0.07682447, b: 0.7830189, a: 1}
   - colourType: 3
-    colourMaterial: {r: 1, g: 0.81428003, b: 0, a: 1}
+    colourMaterial: {r: 0.97654676, g: 1, b: 0, a: 1}
