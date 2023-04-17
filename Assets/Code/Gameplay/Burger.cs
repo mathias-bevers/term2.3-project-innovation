@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Burger : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class Burger : MonoBehaviour
 	public event Action<Burger> LandedEvent;
 	public Transform CachedTransform { get; private set; }
 	private new Rigidbody rigidbody;
+
+	[SerializeField] UnityEvent onLand;
 
 
 	private void Awake()
@@ -30,5 +33,7 @@ public class Burger : MonoBehaviour
 		CachedTransform.position = landPosition;
 
 		LandedEvent?.Invoke(this);
-	}
+		onLand?.Invoke();
+
+    }
 }

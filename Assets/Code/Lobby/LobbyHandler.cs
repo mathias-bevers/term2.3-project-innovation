@@ -1,7 +1,4 @@
 ﻿using shared;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Schema;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -80,7 +77,7 @@ public class LobbyHandler : BaseLobbyHandler
             UserClient userClient = overrideClient as UserClient;
             Destroy(userClient.gameObject);
         }
-        SceneManager.LoadScene("IPScene");
+        SceneManager.LoadScene("MainMenu");
     }
 
     public void ReadyPressed()

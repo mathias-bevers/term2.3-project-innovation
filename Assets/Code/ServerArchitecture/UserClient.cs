@@ -7,6 +7,7 @@ using System.Net;
 using UnityEngine;
 using static PacketHandler;
 using UnityEngine.SceneManagement;
+using System.Threading;
 
 public class UserClient : IRegistrable
 {
@@ -22,6 +23,8 @@ public class UserClient : IRegistrable
     float timerWithoutHeartbeat = 0;
     int penaltyCount = 0;
 
+    List<ISerializable> serializables = new List<ISerializable>();
+
     void HandleReadPackets()
     {
         if (client == null) return;
@@ -29,17 +32,27 @@ public class UserClient : IRegistrable
         if(timerWithoutHeartbeat >= 3.5f || penaltyCount >= 5)
         {
             SendPacket(new Disconnected());
-            SceneManager.LoadScene("IPScene");
+            SceneManager.LoadScene("MainMenu");
             Destroy(this);
             return;
         }
         if (client.Available == 0) return;
 
-        byte[] gottenBytes = StreamUtil.Read(client.stream);
-        Packet packet = new Packet(gottenBytes);
-        ISerializable current = packet.Read<ISerializable>();
 
-        reader?.Invoke(client, current, TrafficDirection.Received);
+        //new Thread(() =>
+        //{
+            byte[] gottenBytes = StreamUtil.Read(client.stream);
+            Packet packet = new Packet(gottenBytes);
+            ISerializable current = packet.Read<ISerializable>();
+            reader?.Invoke(client, current, TrafficDirection.Received);
+        //serializables.Add(current);
+        //}).Start();
+
+        for (int i = serializables.Count - 1; i >= 0; i--)
+        {
+            //reader?.Invoke(client, serializables[i], TrafficDirection.Received);
+            //serializables.RemoveAt(i);
+        }
     }
 
     void ReceivePacket(ServerClient client, ISerializable serializable, TrafficDirection trafficDirection)
@@ -60,6 +73,7 @@ public class UserClient : IRegistrable
         packet.Write(serializable);
         try {
             reader?.Invoke(client, serializable, TrafficDirection.Send);
+            //new Thread(() => StreamUtil.Write(client.stream, packet.GetBytes())).Start();
             StreamUtil.Write(client.stream, packet.GetBytes());
         } catch(Exception e) { Debug.LogError(e); penaltyCount++; }
     }
@@ -77,7 +91,7 @@ public class UserClient : IRegistrable
     void Update() => HandleReadPackets();
     void OnEnable() => Register(ReceivePacket);
     void OnDisable() => Unregister(ReceivePacket);
-    void OnDestroy() => SendPacket(new Disconnected());
+    void OnDestroy() { SendPacket(new Disconnected()); client.client.Close(); }
     public override void Register(ClientReader reader) => this.reader += reader;
     public override void Unregister(ClientReader reader) => this.reader -= reader;
 }

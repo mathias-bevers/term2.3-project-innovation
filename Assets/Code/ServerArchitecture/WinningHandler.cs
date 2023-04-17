@@ -41,6 +41,7 @@ public class WinningHandler : NetworkingBehaviour
             {
                 SendMessage(new BackToLobby());
                 hasSend2 = true;
+                
             }
         }
     }
@@ -48,6 +49,8 @@ public class WinningHandler : NetworkingBehaviour
     [NetworkRegistry(typeof(BackToLobby), TrafficDirection.Send)]
     public void Receive(ServerClient client, BackToLobby backToLobby, TrafficDirection direction)
     {
+        ((MainServer)overrideClient).StopServer();
+        Destroy(overrideClient.gameObject);
         SceneManager.LoadScene("Lobby");
     }
 }

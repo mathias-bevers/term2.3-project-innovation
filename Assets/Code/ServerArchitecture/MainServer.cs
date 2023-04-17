@@ -1,4 +1,5 @@
 using shared;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -25,17 +26,19 @@ public class MainServer : IRegistrable
         server.Declare<Disconnected>(new NetworkedCallback(HandleDisconnect, TrafficDirection.Both));
         server.Declare<ReadyRequest>(new NetworkedCallback(HandleReady, TrafficDirection.Received));
         server.Declare<AskLoadingEntered>(new NetworkedCallback(HandleLoadingEntered, TrafficDirection.Send));
+        server.Declare<BackToLobby>(new NetworkedCallback(HandleLobbyLoading, TrafficDirection.Send));
+        server.Declare<ReleaseScene>(new NetworkedCallback(ReleasedScene, TrafficDirection.Send));
         StartServer();
     }
 
     bool hasQuit = false;
 
-    void HandleDisconnect(ServerClient client, ISerializable serializable, TrafficDirection direction)
+    public void HandleDisconnect(ServerClient client, ISerializable serializable, TrafficDirection direction)
     {
-        if(serverStates == ServerStates.Lobby) server.DisconnectClient(client);
+        if (serverStates == ServerStates.Lobby) server.DisconnectClient(client);
         else
         {
-            foreach(ServerClient c in server.Clients)
+            foreach (ServerClient c in server.Clients)
             {
                 SendPacket(new Disconnected(c.ID));
             }
@@ -49,7 +52,18 @@ public class MainServer : IRegistrable
 
     void HandleClient(ServerClient client, ISerializable serializable, TrafficDirection direction)
     {
-        
+
+    }
+
+    void ReleasedScene(ServerClient client, ISerializable serializable, TrafficDirection dir)
+    {
+        serverStates = ServerStates.Playing;
+    } 
+
+    void HandleLobbyLoading(ServerClient client, ISerializable serializable, TrafficDirection direction)
+    {
+        server.Stop();
+        Destroy(gameObject);
     }
 
     void HandleLoadingEntered(ServerClient client, ISerializable serializable, TrafficDirection direction)
@@ -60,8 +74,8 @@ public class MainServer : IRegistrable
     void HandleReady(ServerClient client, ISerializable readyRequest, TrafficDirection direction)
     {
         ReadyRequest ready = (ReadyRequest)readyRequest;
-        foreach(ServerClient client2 in server.Clients)
-            if(client2.ID == client.ID)
+        foreach (ServerClient client2 in server.Clients)
+            if (client2.ID == client.ID)
                 client2.isReady = ready.Readied;
         server.SendMessages(server.Clients, new ReadyRequest(client.ID, ready.Readied));
     }
@@ -70,29 +84,46 @@ public class MainServer : IRegistrable
     {
         RequestNameChange nameChange = (RequestNameChange)serializable;
         string name = nameChange.Name;
-        if (name.Length <= 3) return;
+        if (name.Length < 3) return;
         if (name.Length > 12) return;
-        foreach(ServerClient cli in server.Clients)
-            if (cli.self.Name.ToLower() == name.ToLower()) 
+        foreach (ServerClient cli in server.Clients)
+            if (cli.self.Name.ToLower() == name.ToLower())
                 return;
 
         client.self.Name = nameChange.Name;
         server.SendMessages(server.Clients, new RequestNameChange(client.ID, nameChange.Name));
     }
 
+    float waitTimer = 0;
+
     void DoUpdate()
     {
         server.Update();
 
+        if(server.Clients.Count != Settings.maxPlayerCount && serverStates != ServerStates.Lobby)
+        {
+            HandleDisconnect(null, new Disconnected(), TrafficDirection.Received);
+        }
+
         if (serverStates == ServerStates.Lobby) InLobby();
         else if (serverStates == ServerStates.Loading) { }
+        else if (serverStates == ServerStates.Returning)
+        {
+            waitTimer += Time.deltaTime;
+            if(waitTimer >= 4)
+            {
+                server.SendMessages(server.Clients, server.GenerateUserList());
+                serverStates = ServerStates.Lobby;
+                waitTimer = 0;
+            }
+        }
     }
 
     void DoSecondUpdate()
     {
         server.SecondUpdate();
         if (serverStates == ServerStates.Lobby) { }
-        else if (serverStates == ServerStates.Loading) 
+        else if (serverStates == ServerStates.Loading)
         {
             server.SendMessages(server.Clients, new AskLoadingEntered());
         }
@@ -126,13 +157,13 @@ public class MainServer : IRegistrable
         server.SendMessages(server.Clients, new ForceLoading());
     }
 
-    public void StartServer() => server.Start();
+    public void StartServer() { server.Start();  }
     public void StopServer() => server.Stop();
-    public MainServer() =>  server = new ServerListener(Settings.serverIP, Settings.port, Settings.maxPlayerCount);
-    void OnEnable() =>      server.Register(HandleClient);
-    void OnDisable() =>     server.Unregister(HandleClient);
-    void Update() =>        DoUpdate();
-    void FixedUpdate() =>   DoFixedUpdate();
+    public MainServer() => server = new ServerListener(Settings.serverIP, Settings.port, Settings.maxPlayerCount);
+    void OnEnable() => server.Register(HandleClient);
+    void OnDisable() => server.Unregister(HandleClient);
+    void Update() => DoUpdate();
+    void FixedUpdate() => DoFixedUpdate();
 
     public override void Register(PacketHandler.ClientReader reader)
     {
@@ -146,7 +177,7 @@ public class MainServer : IRegistrable
 
     public override void SendPacket(ISerializable serializable)
     {
-       server.SendPacket(serializable);
+        server.SendPacket(serializable);
     }
 
     public UserList GetUserList() => server.GenerateUserList();
@@ -155,7 +186,7 @@ public class MainServer : IRegistrable
     private void OnGUI()
     {
         EditorGUIUtility.ScaleAroundPivot(new Vector2(3, 3), Vector2.zero);
-        for(int i = server.Clients.Count - 1; i >= 0; i--)
+        for (int i = server.Clients.Count - 1; i >= 0; i--)
         {
             var client = server.Clients[i];
             GUI.Box(new Rect(0, 300 + (i * 52), 200, 50), client.ID.ToString());
@@ -169,5 +200,6 @@ enum ServerStates
 {
     Lobby,
     Loading,
-    Playing
+    Playing,
+    Returning
 }

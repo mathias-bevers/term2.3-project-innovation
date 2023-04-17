@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(CapsuleCollider))]
@@ -10,9 +11,14 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
     [SerializeField] float maxSpeed = 100;
     [SerializeField] float speed = 8;
     [SerializeField] float blockTime = 0.8f;
-    [SerializeField] MeshRenderer indicator;
+    [SerializeField] float rotationSpeed = 90;
+    //[SerializeField] MeshRenderer indicator;
 
-    [SerializeField] List<ColourMaterial> colours = new List<ColourMaterial>();
+    [SerializeField] Animator animator;
+
+    [SerializeField] List<ColourToObj> colours = new List<ColourToObj>();
+
+    [SerializeField] SetGoldenState setGoldenState;
 
     public float currentBurnedCounter = 0;
 
@@ -20,6 +26,8 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
     bool blockInput = false;
     private new Rigidbody rigidbody;
     private Vector2 input;
+
+    [SerializeField] UnityEvent onBounce;
 
     internal override void Awoken()
     {
@@ -35,18 +43,22 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
         this.input = new Vector2(input.x, input.y);
     }
 
-    [NetworkRegistry(typeof(RequestRespawn), TrafficDirection.Received)]
-    public void Receive(ServerClient client, RequestRespawn packet, TrafficDirection direction)
+    [NetworkRegistry(typeof(BakingPacket), TrafficDirection.Send)]
+    public void Receive(ServerClient client, BakingPacket packet, TrafficDirection direction)
     {
-        transform.position = new Vector3(0, 1, 0);
+       foreach(BakingPacketData data in packet.bakingPackets)
+        {
+            if(data.ID != allowedID) continue;
+            setGoldenState.SetState(data.actualAmount / packet.maxBake);
+        }
     }
 
     public void SetColour(ColourType type)
     {
         foreach(var colour in colours)
         {
-            if (colour.colourType != type) continue;
-            indicator.material = colour.colourMaterial;
+            if (colour.Colour != type) continue;
+            colour.obj.SetActive(true);
         }
     }
 
@@ -54,6 +66,9 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
     {
         blockTimer -= Time.deltaTime;
         if (blockTimer <= 0) blockInput = false;
+
+        animator.SetFloat("vel", rigidbody.velocity.magnitude);
+        animator.SetBool("stun", blockInput);
     }
 
     private void FixedUpdate()
@@ -71,25 +86,43 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
 
         Vector2 actInput = input;
         if(actInput.magnitude > 1) actInput.Normalize();
-        Vector3 newInput = new Vector3(actInput.x, 0, actInput.y);
+        if (actInput.y < 0) actInput.y *= 0.68f;
+        // transform.Rotate(new Vector3(0, rotationSpeed * actInput.x * Time.fixedDeltaTime, 0));
+        transform.rotation = Quaternion.LookRotation(new Vector3(actInput.x, 0, actInput.y));
+
+         Vector3 newInput = new Vector3(0, 0, actInput.magnitude);
         newInput *= speed * Time.fixedDeltaTime;
-        rigidbody.AddForce(newInput, ForceMode.Impulse);
+        rigidbody.AddRelativeForce(newInput, ForceMode.Impulse);
 
         if (rigidbody.velocity.magnitude <= maxSpeed) { return; }
 
         Vector3 velocity = rigidbody.velocity;
         float division = maxSpeed / velocity.magnitude;
         Vector3 newVelocity = velocity * division;
-        rigidbody.velocity = newVelocity;
+        rigidbody.velocity = newVelocity;       
     }
+
     public void OnCollisionStay(Collision collision)
     {
-        MarshMallowMovement movement;
-        if ((movement = collision.collider.GetComponent<MarshMallowMovement>()) == null) return;
+        Component movement;
+        if ((movement = GetOneOfThe(collision)) == null) return;
 
         Vector3 newPos = movement.transform.position;
         newPos.y = transform.position.y;
         AddForce(newPos, 10f, blockTime);
+    }
+
+    Component GetOneOfThe(Collision collision)
+    {
+        Collider collider = collision.collider;
+
+        MarshMallowMovement movement = collider.GetComponent<MarshMallowMovement>();
+        Burger burger = collider.GetComponent<Burger>();
+
+        if(movement != null) return movement;
+        if(burger != null) return burger;
+
+        return null;
     }
 
     public void AddForce(Vector3 impactPosition, float force, float stunTime)
@@ -97,7 +130,16 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
 	    input = Vector3.zero;
 	    rigidbody.velocity = Vector3.zero;
         rigidbody.AddExplosionForce(force, impactPosition, 2,0,ForceMode.VelocityChange);
+        rigidbody.transform.LookAt(impactPosition);
         blockInput = true;
         blockTimer = stunTime;
+        onBounce?.Invoke();
     }
+}
+
+[System.Serializable]
+public struct ColourToObj
+{
+    public ColourType Colour;
+    public GameObject obj;
 }
