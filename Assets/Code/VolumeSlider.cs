@@ -23,4 +23,9 @@ public class VolumeSlider : MonoBehaviour
     {
         ClientSettings.useGyro = mode;
     }
+
+    public void Graphics(int mode)
+    {
+
+    }
 }
