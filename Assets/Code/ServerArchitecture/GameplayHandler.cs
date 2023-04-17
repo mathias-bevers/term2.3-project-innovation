@@ -127,7 +127,7 @@ public class GameplayHandler : NetworkingBehaviour
         {
             if (spawnedCharacters[i].transform.position.y <= -1)
             {
-                SendMessage(new DeathEvent(spawnedCharacters[i].allowedID, Vector3.Distance(spawnedCharacters[i].transform.position, transform.position) < 5 ? DeathType.Burned : DeathType.Dirty));
+                SendMessage(new DeathEvent(spawnedCharacters[i].allowedID, Vector3.Distance(spawnedCharacters[i].transform.position, transform.position) < 9 ? DeathType.Burned : DeathType.Dirty));
                 Destroy(spawnedCharacters[i].gameObject);
                 spawnedCharacters.RemoveAt(i);
             }

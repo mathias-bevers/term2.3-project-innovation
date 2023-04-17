@@ -270,7 +270,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   networkTarget: 1
   allowedID: 0
-  maxSpeed: 8
+  maxSpeed: 5
   speed: 10
   blockTime: 0.8
   rotationSpeed: 90

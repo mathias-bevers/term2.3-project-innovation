@@ -109,7 +109,7 @@ public class MarshMallowMovement : IDedNetworkingBehaviour
 
         Vector3 newPos = movement.transform.position;
         newPos.y = transform.position.y;
-        AddForce(newPos, 10f, blockTime);
+        AddForce(newPos, 7f, blockTime);
     }
 
     Component GetOneOfThe(Collision collision)
