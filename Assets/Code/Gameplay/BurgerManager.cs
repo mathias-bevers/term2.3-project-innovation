@@ -42,9 +42,21 @@ public class BurgerManager : EventManager
 		if (activeBurgers.Count >= maxBurgers) { return; }
 
 		float distance = Random.Range(minRadius, maxRadius);
-		Vector2 position = Random.insideUnitCircle;
-		position.Normalize();
-		position *= distance;
+		Vector2 position = Vector2.zero;
+		for (int i = 0; i < 10; i++)
+		{
+			position = Random.insideUnitCircle;
+			position.Normalize();
+			position *= distance;
+			bool failed = false;
+			foreach (Burger b in activeBurgers)
+            {
+				Vector2 burgerPos = new Vector2(b.transform.position.x, b.transform.position.z);
+				if (Vector2.Distance(burgerPos, position) < 3) failed = true;
+            }
+			if (!failed) break;
+		}
+
 
 		Debug.Log($"Spawning burger at {position}");
 
