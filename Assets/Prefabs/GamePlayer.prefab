@@ -520,6 +520,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: b61a480104e59b54f8e9e9feaaeadf17, type: 2}
+    - target: {fileID: 4227675912372550239, guid: a7448088196ba484c9a4d730af2bf863, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7422007707701181087, guid: a7448088196ba484c9a4d730af2bf863, type: 3}
       propertyPath: m_Name
       value: BasicMarshfellowFinal (1)
