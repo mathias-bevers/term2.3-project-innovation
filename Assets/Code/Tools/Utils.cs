@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Net;
 using System.Linq;
+using System.Reflection;
+using System;
+using UnityEngine.UI;
 
 public static partial class Utils
 {
@@ -37,4 +40,12 @@ public static partial class Utils
             throw new NoComponentFoundException($"No Object of type {nameof(T)} found.");
         return t;
     }
+
+	public static List<Toggle> GetTogglesFromToggleGroup(this ToggleGroup group)
+	{
+		FieldInfo toggleField = typeof(ToggleGroup).GetField("m_Toggles", BindingFlags.Instance | BindingFlags.NonPublic);
+		return toggleField == null
+			? throw new NotSupportedException("\'m_Toggles\' no longer exist in this context")
+			: toggleField.GetValue(group) as List<Toggle>;
+	}
 }
