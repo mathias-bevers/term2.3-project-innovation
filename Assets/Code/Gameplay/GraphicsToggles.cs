@@ -26,7 +26,7 @@ public class GraphicsToggles : MonoBehaviour
 		if (!isOn) { return; }
 
 		ClientSettings.graphicsMode = mode;
-		Debug.Log(ClientSettings.graphicsMode.ToString());
+		QualitySettings.SetQualityLevel((int)mode, true);
 	}
 }
 
