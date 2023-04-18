@@ -4,5 +4,35 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 0
+    path: Assets/Scenes/ServerScene.unity
+    guid: 41317bc5d5a2f5f4ca80b85a3ae0aa73
+  - enabled: 0
+    path: Assets/Scenes/ClientScene.unity
+    guid: 3019cfbcc995a274b8376491e59438cd
+  - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: f393659097c992c42833a1fd01d6b1c9
+  - enabled: 0
+    path: Assets/Scenes/IPScene.unity
+    guid: a47d89809a8ed674bb7cbaa822350613
+  - enabled: 1
+    path: Assets/Scenes/Lobby.unity
+    guid: 6c9096d10a3d93743abd6837cc115567
+  - enabled: 0
+    path: Assets/Scenes/SampleScene.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Scenes/LoadingScene.unity
+    guid: 4b6f74741d329f14ea3f05cfbe3fff3b
+  - enabled: 1
+    path: Assets/Scenes/GameplayScene.unity
+    guid: 89c37fe70b46d6d49b7ac1675cae0ffa
+  - enabled: 0
+    path: Assets/Scenes/MathiasScene.unity
+    guid: 998f6ad8877b36a48a30160a95c0a6e8
+  - enabled: 1
+    path: Assets/Scenes/ClientController.unity
+    guid: bf6c4b81ddd1e3c4d8aee03c79178264
   m_configObjects: {}
